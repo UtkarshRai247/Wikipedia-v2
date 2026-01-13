@@ -5,6 +5,7 @@ This module handles the OpenAI API calls for policy/guideline/essay identificati
 """
 
 import os
+import re
 from openai import OpenAI
 from config.prompts import get_analysis_prompt, SYSTEM_PROMPT
 
@@ -30,14 +31,111 @@ def get_openai_client():
     return _client
 
 
-def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.3):
+def chunk_text(text, max_chunk_size=3000, overlap=300):
+    """
+    Split text into overlapping chunks to prevent missing policy mentions at boundaries.
+    
+    Args:
+        text: The full discussion text to chunk
+        max_chunk_size: Maximum characters per chunk (default: 3000)
+        overlap: Number of characters to overlap between chunks (default: 300)
+        
+    Returns:
+        List of text chunks with overlap
+    """
+    if len(text) <= max_chunk_size:
+        return [text]
+    
+    chunks = []
+    start = 0
+    
+    while start < len(text):
+        # Calculate end position
+        end = start + max_chunk_size
+        
+        # If this isn't the last chunk, try to break at a sentence boundary
+        if end < len(text):
+            # Look for sentence endings (., !, ?) within the last 200 chars of the chunk
+            search_start = max(end - 200, start)
+            sentence_end = max(
+                text.rfind('. ', search_start, end),
+                text.rfind('! ', search_start, end),
+                text.rfind('? ', search_start, end),
+                text.rfind('\n\n', search_start, end)  # Also break at paragraph boundaries
+            )
+            
+            # If we found a good break point, use it
+            if sentence_end > start:
+                end = sentence_end + 1
+        
+        # Extract the chunk
+        chunk = text[start:end].strip()
+        if chunk:
+            chunks.append(chunk)
+        
+        # Move start position (with overlap)
+        start = end - overlap
+        
+        # Prevent infinite loop
+        if start >= len(text):
+            break
+    
+    return chunks
+
+
+def deduplicate_policy_mentions(chunks_results):
+    """
+    Deduplicate policy mentions that appear in multiple chunks.
+    
+    Args:
+        chunks_results: List of result strings from different chunks
+        
+    Returns:
+        Combined and deduplicated result string
+    """
+    if not chunks_results:
+        return "No items explicitly mentioned in this discussion."
+    
+    # Combine all results
+    all_mentions = []
+    for result in chunks_results:
+        if result and "No" not in result and "explicitly mentioned" not in result:
+            all_mentions.append(result)
+    
+    if not all_mentions:
+        return "No items explicitly mentioned in this discussion."
+    
+    # Simple deduplication: combine unique mentions
+    # Extract policy links using regex to find unique policies
+    seen_policies = set()
+    unique_mentions = []
+    
+    for mention in all_mentions:
+        # Extract policy names from links (e.g., "Wikipedia:NPOV")
+        policy_links = re.findall(r'wikipedia\.org/wiki/(Wikipedia:[^"]+)', mention, re.IGNORECASE)
+        
+        for link in policy_links:
+            if link not in seen_policies:
+                seen_policies.add(link)
+                # Find the full mention containing this policy
+                for line in mention.split('\n'):
+                    if link in line:
+                        unique_mentions.append(line)
+                        break
+    
+    return '\n'.join(unique_mentions) if unique_mentions else "No items explicitly mentioned in this discussion."
+
+
+def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.3, chunk_size=3000):
     """
     Use OpenAI to identify policies, guidelines, and essays in a Wikipedia discussion.
+    Uses intelligent chunking to prevent hallucination and missing mentions in long texts.
     
     Args:
         discussion_text: The extracted discussion text to analyze
         model: OpenAI model to use (default: gpt-4)
         temperature: Temperature for generation (default: 0.3 for more focused output)
+        chunk_size: Maximum characters per chunk (default: 3000)
         
     Returns:
         dict with 'policies', 'guidelines', and 'essays' keys containing the analysis
@@ -61,27 +159,40 @@ def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.
                 'essays': f'<p class="error">{error_msg}</p>'
             }
         
+        # Split text into chunks with overlap
+        chunks = chunk_text(discussion_text, max_chunk_size=chunk_size, overlap=300)
+        print(f"Split into {len(chunks)} chunks for analysis")
+        
         for category in categories:
             print(f"Analyzing {category}...")
+            chunk_results = []
             
-            # Get the appropriate prompt for this category
-            full_prompt = get_analysis_prompt(category, discussion_text)
+            # Analyze each chunk separately
+            for i, chunk in enumerate(chunks):
+                print(f"  Processing chunk {i+1}/{len(chunks)} ({len(chunk)} chars)...")
+                
+                # Get the appropriate prompt for this category
+                full_prompt = get_analysis_prompt(category, chunk)
+                
+                # Call OpenAI API
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": full_prompt}
+                    ],
+                    temperature=temperature,
+                    max_tokens=1500
+                )
+                
+                result_text = response.choices[0].message.content.strip()
+                chunk_results.append(result_text)
             
-            # Call OpenAI API
-            response = client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": full_prompt}
-                ],
-                temperature=temperature,
-                max_tokens=1500
-            )
+            # Deduplicate and combine results from all chunks
+            combined_result = deduplicate_policy_mentions(chunk_results)
+            results[category] = combined_result
             
-            result_text = response.choices[0].message.content.strip()
-            results[category] = result_text
-            
-            print(f"  → {category}: {len(result_text)} characters")
+            print(f"  → {category}: {len(combined_result)} characters (from {len(chunks)} chunks)")
         
         print("OpenAI analysis complete!")
         return results
