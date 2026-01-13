@@ -10,11 +10,16 @@ import sys
 # Ensure the current directory is in the Python path
 sys.path.insert(0, os.path.dirname(__file__))
 
-# Import the Flask app
-from main import app
-
-# This is what Gunicorn will look for
-application = app
+# Create the Flask app directly
+try:
+    from app import create_app
+    application = create_app()
+    app = application  # Alias for compatibility
+except Exception as e:
+    print(f"ERROR: Failed to create Flask app: {e}")
+    import traceback
+    traceback.print_exc()
+    raise
 
 if __name__ == "__main__":
-    app.run()
+    application.run()
