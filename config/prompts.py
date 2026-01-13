@@ -81,17 +81,22 @@ If NO essays are actually mentioned in the discussion, respond with EXACTLY: "No
 
 SYSTEM_PROMPT = """You are an expert at analyzing Wikipedia talk page discussions and identifying which Wikipedia policies, guidelines, and essays are explicitly mentioned or discussed. 
 
-You must be precise and only identify items that are actually present in the text. Do not infer or assume based on the topic being discussed. Only report what is explicitly mentioned."""
+You must be precise and only identify items that are actually present in the text. Do not infer or assume based on the topic being discussed. Only report what is explicitly mentioned.
+
+When analyzing multi-section discussions:
+- Read through ALL sections systematically
+- List each unique policy/guideline/essay only ONCE (even if mentioned multiple times)
+- Provide context from the most relevant mention"""
 
 
-def get_analysis_prompt(category, discussion_text, max_chars=10000):
+def get_analysis_prompt(category, discussion_text, max_chars=100000):
     """
     Get the full prompt for a specific category with the discussion text.
     
     Args:
         category: One of 'policies', 'guidelines', or 'essays'
-        discussion_text: The extracted discussion text to analyze
-        max_chars: Maximum characters of discussion text to include
+        discussion_text: The extracted discussion text to analyze (can be structured with sections)
+        max_chars: Maximum characters of discussion text to include (default: 100K for single-call approach)
         
     Returns:
         The complete prompt string
@@ -105,7 +110,7 @@ def get_analysis_prompt(category, discussion_text, max_chars=10000):
     if category not in prompts:
         raise ValueError(f"Unknown category: {category}")
     
-    # Truncate discussion text if too long
+    # Truncate discussion text if too long (rarely needed with gpt-4o-mini's 128K context)
     truncated_text = discussion_text[:max_chars]
     if len(discussion_text) > max_chars:
         truncated_text += "\n\n[Text truncated due to length]"

@@ -32,111 +32,90 @@ def get_openai_client():
     return _client
 
 
-def chunk_text(text, max_chunk_size=6000, overlap=400):
+def create_sections(text, section_size=8000):
     """
-    Split text into overlapping chunks to prevent missing policy mentions at boundaries.
+    Split text into organized sections for LLM to process systematically.
+    No overlap needed since all sections sent in single API call.
     
     Args:
-        text: The full discussion text to chunk
-        max_chunk_size: Maximum characters per chunk (default: 3000)
-        overlap: Number of characters to overlap between chunks (default: 300)
+        text: The full discussion text to section
+        section_size: Target characters per section (default: 8000)
         
     Returns:
-        List of text chunks with overlap
+        List of text sections
     """
-    if len(text) <= max_chunk_size:
+    # If text is small enough, return as single section
+    if len(text) <= section_size:
         return [text]
     
-    chunks = []
+    sections = []
     start = 0
     
     while start < len(text):
         # Calculate end position
-        end = start + max_chunk_size
+        end = start + section_size
         
-        # If this isn't the last chunk, try to break at a sentence boundary
+        # If this isn't the last section, try to break at a sentence/paragraph boundary
         if end < len(text):
-            # Look for sentence endings (., !, ?) within the last 200 chars of the chunk
-            search_start = max(end - 200, start)
-            sentence_end = max(
-                text.rfind('. ', search_start, end),
+            # Look for good break points within the last 300 chars
+            search_start = max(end - 300, start)
+            break_point = max(
+                text.rfind('\n\n', search_start, end),  # Paragraph boundary (best)
+                text.rfind('. ', search_start, end),    # Sentence ending
                 text.rfind('! ', search_start, end),
-                text.rfind('? ', search_start, end),
-                text.rfind('\n\n', search_start, end)  # Also break at paragraph boundaries
+                text.rfind('? ', search_start, end)
             )
             
             # If we found a good break point, use it
-            if sentence_end > start:
-                end = sentence_end + 1
+            if break_point > start:
+                end = break_point + 1
         
-        # Extract the chunk
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
+        # Extract the section
+        section = text[start:end].strip()
+        if section:
+            sections.append(section)
         
-        # Move start position (with overlap)
-        start = end - overlap
-        
-        # Prevent infinite loop
-        if start >= len(text):
-            break
+        # Move to next section (no overlap)
+        start = end
     
-    return chunks
+    return sections
 
 
-def deduplicate_policy_mentions(chunks_results):
+def format_structured_text(sections):
     """
-    Deduplicate policy mentions that appear in multiple chunks.
+    Format sections with clear markers for LLM to process systematically.
     
     Args:
-        chunks_results: List of result strings from different chunks
+        sections: List of text sections
         
     Returns:
-        Combined and deduplicated result string
+        Formatted string with section markers
     """
-    if not chunks_results:
-        return "No items explicitly mentioned in this discussion."
+    if len(sections) == 1:
+        return sections[0]
     
-    # Combine all results
-    all_mentions = []
-    for result in chunks_results:
-        if result and "No" not in result and "explicitly mentioned" not in result:
-            all_mentions.append(result)
+    structured_text = f"This discussion has been divided into {len(sections)} sections for clarity.\n"
+    structured_text += "Please read through ALL sections systematically and identify EVERY unique mention.\n\n"
     
-    if not all_mentions:
-        return "No items explicitly mentioned in this discussion."
+    for i, section in enumerate(sections, 1):
+        structured_text += f"\n{'='*60}\n"
+        structured_text += f"SECTION {i} OF {len(sections)}\n"
+        structured_text += f"{'='*60}\n\n"
+        structured_text += section
     
-    # Simple deduplication: combine unique mentions
-    # Extract policy links using regex to find unique policies
-    seen_policies = set()
-    unique_mentions = []
-    
-    for mention in all_mentions:
-        # Extract policy names from links (e.g., "Wikipedia:NPOV")
-        policy_links = re.findall(r'wikipedia\.org/wiki/(Wikipedia:[^"]+)', mention, re.IGNORECASE)
-        
-        for link in policy_links:
-            if link not in seen_policies:
-                seen_policies.add(link)
-                # Find the full mention containing this policy
-                for line in mention.split('\n'):
-                    if link in line:
-                        unique_mentions.append(line)
-                        break
-    
-    return '\n'.join(unique_mentions) if unique_mentions else "No items explicitly mentioned in this discussion."
+    return structured_text
 
 
-def identify_policies_with_openai(discussion_text, model="gpt-4o-mini", temperature=0.3, chunk_size=6000):
+def identify_policies_with_openai(discussion_text, model="gpt-4o-mini", temperature=0.3, section_size=8000):
     """
     Use OpenAI to identify policies, guidelines, and essays in a Wikipedia discussion.
-    Uses intelligent chunking to prevent hallucination and missing mentions in long texts.
+    Uses structured sections in a single API call per category for optimal performance.
     
     Args:
         discussion_text: The extracted discussion text to analyze
-        model: OpenAI model to use (default: gpt-4)
+        model: OpenAI model to use (default: gpt-4o-mini)
         temperature: Temperature for generation (default: 0.3 for more focused output)
-        chunk_size: Maximum characters per chunk (default: 3000)
+        section_size: Target characters per section (default: 8000)
         
     Returns:
         dict with 'policies', 'guidelines', and 'essays' keys containing the analysis
@@ -160,46 +139,39 @@ def identify_policies_with_openai(discussion_text, model="gpt-4o-mini", temperat
                 'essays': f'<p class="error">{error_msg}</p>'
             }
         
-        # Split text into chunks with overlap
-        chunks = chunk_text(discussion_text, max_chunk_size=chunk_size, overlap=300)
-        print(f"Split into {len(chunks)} chunks for analysis")
+        # Split text into organized sections (for LLM readability)
+        sections = create_sections(discussion_text, section_size=section_size)
+        print(f"Organized into {len(sections)} section(s) for structured analysis")
+        
+        # Format sections with clear markers
+        structured_text = format_structured_text(sections)
         
         for category in categories:
-            print(f"Analyzing {category}...")
-            chunk_results = []
+            print(f"Analyzing {category} (single API call)...")
             
-            # Analyze each chunk separately
-            for i, chunk in enumerate(chunks):
-                print(f"  Processing chunk {i+1}/{len(chunks)} ({len(chunk)} chars)...")
-                
-                # Get the appropriate prompt for this category
-                full_prompt = get_analysis_prompt(category, chunk)
-                
-                # Call OpenAI API
-                response = client.chat.completions.create(
-                    model=model,
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": full_prompt}
-                    ],
-                    temperature=temperature,
-                    max_tokens=800  # Reduced to save memory
-                )
-                
-                result_text = response.choices[0].message.content.strip()
-                chunk_results.append(result_text)
+            # Get the appropriate prompt for this category with structured text
+            full_prompt = get_analysis_prompt(category, structured_text)
             
-            # Deduplicate and combine results from all chunks
-            combined_result = deduplicate_policy_mentions(chunk_results)
-            results[category] = combined_result
+            # Single API call with all sections
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": full_prompt}
+                ],
+                temperature=temperature,
+                max_tokens=1500  # Increased since we're doing one call
+            )
             
-            # Clear chunk results from memory
-            chunk_results.clear()
+            result_text = response.choices[0].message.content.strip()
+            results[category] = result_text
+            
+            # Clear from memory
             gc.collect()
             
-            print(f"  → {category}: {len(combined_result)} characters (from {len(chunks)} chunks)")
+            print(f"  ✓ {category}: {len(result_text)} characters")
         
-        print("OpenAI analysis complete!")
+        print(f"\n✓ Analysis complete! (3 API calls total)")
         return results
         
     except Exception as e:
