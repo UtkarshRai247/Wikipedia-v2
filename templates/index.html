@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Policy Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Wikipedia Policy Analyzer</h1>
+            <p>Analyze Wikipedia talk page discussions and identify policy mentions</p>
+            <div class="instructions">
+                <p><strong>💡 Tip:</strong> To analyze a <em>specific discussion</em>, include the section anchor in your URL:</p>
+                <p style="font-family: monospace; font-size: 0.9em; background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 5px;">
+                    https://en.wikipedia.org/wiki/Talk:Article<strong style="color: #2563eb;">#Section_Name</strong>
+                </p>
+            </div>
+        </header>
+
+        <div class="input-section">
+            <input 
+                type="text" 
+                id="wiki-url" 
+                placeholder="Paste Wikipedia talk page URL with #section (e.g., Talk:Article#Discussion_Title)"
+                value="">
+            <button id="analyze-btn" onclick="analyzeDiscussion()">Analyze Discussion</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing discussion with OpenAI...</p>
+        </div>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+
+        <div id="results" class="results" style="display: none;">
+            <div class="column left-column">
+                <div class="column-header">
+                    <h2>📄 Discussion</h2>
+                </div>
+                <div id="discussion-content" class="content scrollable"></div>
+            </div>
+
+            <div class="column right-column">
+                <div class="column-header">
+                    <h2>📋 Policy Mentions</h2>
+                </div>
+                <div class="content scrollable">
+                    <div class="policy-section">
+                        <h3>🔴 Policies</h3>
+                        <div id="policies-content" class="policy-content"></div>
+                    </div>
+                    
+                    <div class="policy-section">
+                        <h3>🟡 Guidelines</h3>
+                        <div id="guidelines-content" class="policy-content"></div>
+                    </div>
+                    
+                    <div class="policy-section">
+                        <h3>🔵 Essays</h3>
+                        <div id="essays-content" class="policy-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeDiscussion() {
+            const url = document.getElementById('wiki-url').value.trim();
+            
+            if (!url) {
+                showError('Please enter a Wikipedia talk page URL');
+                return;
+            }
+
+            // Validate URL
+            if (!url.includes('wikipedia.org')) {
+                showError('Please enter a valid Wikipedia URL');
+                return;
+            }
+
+            // Hide previous results and errors
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('analyze-btn').disabled = true;
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to analyze discussion');
+                }
+
+                // Display results
+                displayResults(data);
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('analyze-btn').disabled = false;
+            }
+        }
+
+        function displayResults(data) {
+            // Display discussion
+            document.getElementById('discussion-content').innerHTML = data.discussion_html;
+
+            // Display policies
+            document.getElementById('policies-content').innerHTML = formatText(data.policies);
+            document.getElementById('guidelines-content').innerHTML = formatText(data.guidelines);
+            document.getElementById('essays-content').innerHTML = formatText(data.essays);
+
+            // Show results
+            document.getElementById('results').style.display = 'flex';
+        }
+
+        function formatText(text) {
+            if (!text || text.trim() === '') {
+                return '<p class="empty-result">None found</p>';
+            }
+            
+            // Convert line breaks to HTML and preserve HTML links
+            // The text already contains HTML links from OpenAI
+            return '<div class="formatted-text">' + 
+                   text.replace(/\n/g, '<br>') + 
+                   '</div>';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Allow Enter key to trigger analysis
+        document.getElementById('wiki-url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeDiscussion();
+            }
+        });
+
+        // Add click handlers for policy items to scroll and highlight
+        function addPolicyClickHandlers() {
+            const policyItems = document.querySelectorAll('.policy-item');
+            
+            policyItems.forEach(item => {
+                item.style.cursor = 'pointer';
+                
+                item.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on a link
+                    if (e.target.tagName === 'A') {
+                        return;
+                    }
+                    
+                    const highlightId = this.getAttribute('data-highlight');
+                    if (!highlightId) {
+                        console.log('No highlight ID found');
+                        return;
+                    }
+                    
+                    const targetElement = document.getElementById(highlightId);
+                    
+                    if (targetElement) {
+                        console.log('Scrolling to and highlighting:', highlightId);
+                        
+                        // Scroll the discussion panel to the target
+                        const discussionPanel = document.getElementById('discussion-content');
+                        
+                        // Get the target's position relative to the scrollable container
+                        const panelRect = discussionPanel.getBoundingClientRect();
+                        const targetRect = targetElement.getBoundingClientRect();
+                        const targetPosition = targetRect.top - panelRect.top + discussionPanel.scrollTop;
+                        
+                        discussionPanel.scrollTo({
+                            top: targetPosition - 100, // Offset for better visibility
+                            behavior: 'smooth'
+                        });
+                        
+                        // Remove previous highlights
+                        document.querySelectorAll('.highlighted-mention').forEach(el => {
+                            el.classList.remove('highlighted-mention');
+                        });
+                        
+                        // Add highlight to the target
+                        targetElement.classList.add('highlighted-mention');
+                        
+                        // Remove highlight after 3 seconds
+                        setTimeout(() => {
+                            targetElement.classList.remove('highlighted-mention');
+                        }, 3000);
+                    } else {
+                        console.log('Target element not found:', highlightId);
+                    }
+                });
+            });
+        }
+
+        // Call this after results are displayed
+        function displayResults(data) {
+            // Display discussion
+            document.getElementById('discussion-content').innerHTML = data.discussion_html;
+
+            // Display policies
+            document.getElementById('policies-content').innerHTML = formatText(data.policies);
+            document.getElementById('guidelines-content').innerHTML = formatText(data.guidelines);
+            document.getElementById('essays-content').innerHTML = formatText(data.essays);
+
+            // Show results
+            document.getElementById('results').style.display = 'flex';
+            
+            // Add click handlers for interactive scrolling
+            addPolicyClickHandlers();
+        }
+    </script>
+</body>
+</html>
+
