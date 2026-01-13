@@ -6,6 +6,7 @@ This module handles the OpenAI API calls for policy/guideline/essay identificati
 
 import os
 import re
+import gc
 from openai import OpenAI
 from config.prompts import get_analysis_prompt, SYSTEM_PROMPT
 
@@ -31,7 +32,7 @@ def get_openai_client():
     return _client
 
 
-def chunk_text(text, max_chunk_size=3000, overlap=300):
+def chunk_text(text, max_chunk_size=6000, overlap=400):
     """
     Split text into overlapping chunks to prevent missing policy mentions at boundaries.
     
@@ -126,7 +127,7 @@ def deduplicate_policy_mentions(chunks_results):
     return '\n'.join(unique_mentions) if unique_mentions else "No items explicitly mentioned in this discussion."
 
 
-def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.3, chunk_size=3000):
+def identify_policies_with_openai(discussion_text, model="gpt-4o-mini", temperature=0.3, chunk_size=6000):
     """
     Use OpenAI to identify policies, guidelines, and essays in a Wikipedia discussion.
     Uses intelligent chunking to prevent hallucination and missing mentions in long texts.
@@ -182,7 +183,7 @@ def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.
                         {"role": "user", "content": full_prompt}
                     ],
                     temperature=temperature,
-                    max_tokens=1500
+                    max_tokens=800  # Reduced to save memory
                 )
                 
                 result_text = response.choices[0].message.content.strip()
@@ -191,6 +192,10 @@ def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.
             # Deduplicate and combine results from all chunks
             combined_result = deduplicate_policy_mentions(chunk_results)
             results[category] = combined_result
+            
+            # Clear chunk results from memory
+            chunk_results.clear()
+            gc.collect()
             
             print(f"  → {category}: {len(combined_result)} characters (from {len(chunks)} chunks)")
         
