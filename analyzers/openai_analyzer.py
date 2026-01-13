@@ -18,15 +18,14 @@ def get_openai_client():
     """
     Get or create the OpenAI client (lazy initialization).
     This ensures the API key is loaded from .env before creating the client.
+    Returns None if API key is not available.
     """
     global _client
     if _client is None:
         api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
-            raise ValueError(
-                "OPENAI_API_KEY not found in environment variables. "
-                "Please create a .env file with your OpenAI API key."
-            )
+            print("WARNING: OPENAI_API_KEY not found in environment variables.")
+            return None
         _client = OpenAI(api_key=api_key)
     return _client
 
@@ -52,6 +51,15 @@ def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.
         
         # Get the OpenAI client (lazy initialization)
         client = get_openai_client()
+        
+        if client is None:
+            error_msg = "OpenAI API key not configured. Please set OPENAI_API_KEY environment variable."
+            print(f"ERROR: {error_msg}")
+            return {
+                'policies': f'<p class="error">{error_msg}</p>',
+                'guidelines': f'<p class="error">{error_msg}</p>',
+                'essays': f'<p class="error">{error_msg}</p>'
+            }
         
         for category in categories:
             print(f"Analyzing {category}...")

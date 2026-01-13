@@ -73,17 +73,47 @@ def analyze():
         print(f"  HTML length: {len(discussion['html'])} characters")
         print(f"  Text length: {len(discussion['text'])} characters")
         
-        # Use OpenAI to analyze the discussion for policies/guidelines/essays
-        print(f"\nAnalyzing discussion with OpenAI...")
-        openai_results = identify_policies_with_openai(discussion['text'])
-        
-        # The OpenAI results are already formatted HTML strings
-        policies_html = openai_results['policies']
-        guidelines_html = openai_results['guidelines']
-        essays_html = openai_results['essays']
-        
-        # Use the original discussion HTML (no need for highlight IDs with LLM approach)
-        discussion_html_with_ids = discussion['html']
+        # Try to use OpenAI for analysis, fallback to pattern matching if unavailable
+        import os
+        if os.environ.get("OPENAI_API_KEY"):
+            print(f"\nAnalyzing discussion with OpenAI...")
+            openai_results = identify_policies_with_openai(discussion['text'])
+            
+            # The OpenAI results are already formatted HTML strings
+            policies_html = openai_results['policies']
+            guidelines_html = openai_results['guidelines']
+            essays_html = openai_results['essays']
+            
+            # Use the original discussion HTML
+            discussion_html_with_ids = discussion['html']
+        else:
+            # Fallback to pattern-based detection
+            print(f"\nOpenAI API key not found. Using pattern-based detection...")
+            extracted_links = extract_wikipedia_links(discussion['html'], discussion['text'])
+            
+            print(f"  Found {len(extracted_links['policies'])} policies")
+            print(f"  Found {len(extracted_links['guidelines'])} guidelines")
+            print(f"  Found {len(extracted_links['essays'])} essays")
+            
+            # Extract contexts for each policy/guideline/essay
+            print(f"\nExtracting contexts for policy mentions...")
+            with_contexts = extract_all_policy_contexts(
+                discussion['text'],
+                extracted_links['policies'],
+                extracted_links['guidelines'],
+                extracted_links['essays']
+            )
+            
+            # Add IDs to discussion HTML for highlighting/scrolling
+            discussion_html_with_ids = add_highlight_ids(
+                discussion['html'], 
+                with_contexts['policies'] + with_contexts['guidelines'] + with_contexts['essays']
+            )
+            
+            # Format the results for display with context snippets
+            policies_html = format_policy_list_with_context(with_contexts['policies'], 'policy')
+            guidelines_html = format_policy_list_with_context(with_contexts['guidelines'], 'guideline')
+            essays_html = format_policy_list_with_context(with_contexts['essays'], 'essay')
         
         print(f"\n✓ Analysis complete!")
         print(f"{'='*60}\n")

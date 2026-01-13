@@ -122,19 +122,22 @@ Wikipedia/
 
 ## 🔧 Configuration
 
-### Scraper Mode
+### Analysis Mode (Hybrid Approach)
 
-In `app/routes.py`, you can toggle between scraping modes:
+The application automatically uses a hybrid approach:
 
-```python
-# Use 'wikitext' for Wikipedia API (recommended)
-# Use 'html' for direct HTML scraping (legacy)
-SCRAPER_MODE = 'wikitext'
+- **With OpenAI API Key**: Uses GPT-4 for intelligent policy/guideline/essay detection
+- **Without API Key**: Falls back to pattern-based regex detection
+
+To enable AI-powered analysis, set the `OPENAI_API_KEY` environment variable:
+
+```bash
+export OPENAI_API_KEY=your_api_key_here
 ```
 
 ### Policy Dictionary
 
-The comprehensive policy/guideline/essay dictionary is maintained in `analyzers/policy_extractor.py` under the `WIKIPEDIA_ITEMS` constant.
+The comprehensive policy/guideline/essay dictionary is maintained in `analyzers/policy_extractor.py` under the `WIKIPEDIA_ITEMS` constant (used for pattern-based fallback).
 
 ## 🛠️ Tech Stack
 
