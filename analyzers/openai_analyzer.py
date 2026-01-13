@@ -53,7 +53,6 @@ def identify_policies_with_openai(discussion_text, model="gpt-4", temperature=0.
         # Get the OpenAI client (lazy initialization)
         client = get_openai_client()
         
-        if ()
         for category in categories:
             print(f"Analyzing {category}...")
             
