@@ -149,8 +149,11 @@ SHORTCUTS = {
     'RELIABLE': 'Reliable sources',
     'SOURCE': 'Reliable sources',
     'SOURCES': 'Reliable sources',
+    'UGC': 'Reliable sources',  # WP:UGC - User-generated content (redirect to RS)
     'FRINGE': 'Fringe theories',
     'MOS': 'Manual of Style',
+    'MOS:LABEL': 'Manual of Style',  # MOS:LABEL - labeling guideline
+    'MOS:VAR': 'Manual of Style',  # MOS:VAR - language variant guideline
     'STYLE': 'Manual of Style',
     'N': 'Notability',
     'NOTABLE': 'Notability',
@@ -158,6 +161,8 @@ SHORTCUTS = {
     'UNDUE': 'Neutral point of view',  # UNDUE weight is part of NPOV
     'WEIGHT': 'Neutral point of view',
     'DUE': 'Neutral point of view',
+    'BALANCE': 'Neutral point of view',  # WP:BALANCE - part of NPOV policy
+    'CENSORSHIP': 'What Wikipedia is not',  # WP:CENSORSHIP - redirect to NOT
     'BRD': 'Be bold',
     'BOLD': 'Be bold',
     'DISRUPTIVE': 'Disruptive editing',
@@ -204,8 +209,9 @@ def extract_wikipedia_links(html_content, text_content):
         if 'wikipedia.org/wiki/Wikipedia:' in href or href.startswith('/wiki/Wikipedia:'):
             process_wikipedia_link(href, found_items)
     
-    # Method 2: Search for shortcuts in text (WP:SOMETHING)
-    shortcut_matches = re.findall(r'\bWP:([A-Z0-9]+)\b', text_content, re.IGNORECASE)
+    # Method 2: Search for shortcuts in text (WP:SOMETHING and MOS:SOMETHING)
+    # WP: shortcuts (allow colons for composite shortcuts like WP:NOT#INDISCRIMINATE)
+    shortcut_matches = re.findall(r'\bWP:([A-Z0-9:]+)\b', text_content, re.IGNORECASE)
     for shortcut in shortcut_matches:
         shortcut_upper = shortcut.upper()
         if shortcut_upper in SHORTCUTS:
@@ -213,6 +219,22 @@ def extract_wikipedia_links(html_content, text_content):
             category = find_category(full_name)
             if category:
                 add_item(found_items, category, full_name, f'WP:{shortcut_upper}')
+
+    # MOS: shortcuts (Manual of Style subsections - these don't use WP: prefix)
+    mos_matches = re.findall(r'\bMOS:([A-Z0-9:]+)\b', text_content, re.IGNORECASE)
+    for shortcut in mos_matches:
+        shortcut_upper = 'MOS:' + shortcut.upper()
+        if shortcut_upper in SHORTCUTS:
+            full_name = SHORTCUTS[shortcut_upper]
+            category = find_category(full_name)
+            if category:
+                add_item(found_items, category, full_name, shortcut_upper)
+        else:
+            # Fallback: treat as generic MOS guideline
+            full_name = 'Manual of Style'
+            category = find_category(full_name)
+            if category:
+                add_item(found_items, category, full_name, shortcut_upper)
     
     # Method 3: Search for full names in text (case-insensitive)
     for category, items in WIKIPEDIA_ITEMS.items():
