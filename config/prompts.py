@@ -23,6 +23,11 @@ CRITICAL: DO NOT INCLUDE THESE (they are NOT policies):
 ❌ WP:1AM, WP:IAR, WP:COMMON - these are ESSAYS
 ❌ RFC, RfC, IMAGE - these are not policies at all
 
+🚫 BLACKLIST - NEVER COUNT THESE AS WP:V:
+❌ "WP:VERIFIABLE" → This is a DIFFERENT shortcut! DO NOT list as WP:V!
+❌ "it is not WP:VERIFIABLE" → DO NOT count this!
+If you see "WP:VERIFIABLE", completely IGNORE it - it is NOT WP:V!
+
 ALIAS RECOGNITION (these are the SAME policy):
 - WP:WEIGHT = WP:UNDUE = WP:DUE = all mean NPOV's undue weight section
 - WP:OR = WP:NOR = same policy
@@ -38,25 +43,31 @@ CRITICAL: You MUST find EVERY occurrence, even indirect mentions!
 2. EXPLICIT WITHOUT WP: prefix - these are STILL policy mentions:
    - "UNDUE", "DUE", "WEIGHT", "undue weight" → WP:NPOV
    - "BALANCE", "balanced", "imbalanced" (in policy context) → WP:NPOV
-   - "VERIFIABLE", "WP:VERIFIABLE", "verifiability" → WP:V
    - "CIRCULAR", "WP:Circular", "circular reasoning" → WP:V
    - "NOTCENSORED", "WP:NOTCENSORED", "not censored" → WP:NOT
    - "INDISCRIMINATE", "WP:NOT#INDISCRIMINATE" → WP:NOT
    - Just "OR" when clearly referring to policy → WP:OR
+   
+   ⚠️ EXCEPTION: "WP:VERIFIABLE" is a DIFFERENT shortcut - do NOT count as WP:V!
 
 3. PHRASE mentions - COUNT THESE (MANDATORY):
-   - "original research" or "Original Research" → WP:OR (MUST COUNT!)
-   - "fails verification" or "fails verification as" → WP:V (MUST COUNT!)
+   - "original research" or "Original Research" → WP:OR (count each occurrence)
+   - "fails verification" → WP:V (list ONLY ONCE as a single mention, even if phrase appears multiple times)
    - "uncivil" or "demonstrably uncivil" → WP:PA (MUST COUNT!)
    - "neutral point of view" → WP:NPOV
    - "no personal attacks" → WP:PA
 
 4. CRITICAL EXACT PHRASE RULES:
-   ⚠️ If you see "original research", you MUST list it as WP:OR
-   ⚠️ If you see "fails verification", you MUST list it as WP:V
-   ⚠️ If you see "uncivil", you MUST list it as WP:PA
-   ⚠️ If you see "WP:NOTCENSORED" twice, list it TWICE
-   These are NOT optional - they are REQUIRED mentions!
+   ⚠️ "original research" → MUST list as WP:OR (each occurrence)
+   ⚠️ "fails verification" → List ONCE only (consolidate multiple instances)
+   ⚠️ "uncivil" → MUST list as WP:PA
+   ⚠️ "WP:NOTCENSORED" twice → list it TWICE
+   
+   🚫 BLACKLIST - NEVER COUNT:
+   ❌ "WP:VERIFIABLE" → NEVER count as WP:V! (completely different)
+   ❌ "VERIFIABLE" without "WP:" → NEVER count as WP:V!
+   
+   If you see "WP:VERIFIABLE", completely SKIP it!
 
 5. CONTEXT CLUES (for other patterns):
    - If someone says "it fails DUE" → that's WP:NPOV (DUE)
@@ -80,10 +91,16 @@ REMEMBER: Missing "original research" or "fails verification" is a CRITICAL ERRO
 
 OUTPUT FORMAT - List EVERY occurrence separately:
 CRITICAL RULES FOR UNIQUENESS:
-1. Each line must quote from a DIFFERENT part of the discussion
-2. If a policy appears 10 times but in similar contexts, consolidate to the distinct meaningful mentions
-3. Focus on MEANINGFUL different occurrences, not just word repetition
-4. Do NOT invent quotes that aren't in the discussion
+1. Each line must quote from a DIFFERENT sentence in the discussion
+2. Do NOT list the same sentence twice with different quote lengths (that's the SAME occurrence!)
+3. For "fails verification" phrase: list ONCE only (choose best quote if appears multiple times)
+4. Focus on MEANINGFUL different occurrences, not just word repetition
+5. Do NOT invent quotes that aren't in the discussion
+
+EXAMPLE OF WRONG (duplicate from same sentence):
+❌ WP:V: "confusing WP:V and WP:RS"
+❌ WP:V: "confusing WP:V and WP:RS with WP:NPOV's WP:DUE"
+(These are the SAME sentence - only list ONCE!)
 
 Examples of GOOD counting (list each occurrence):
 <a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (UNDUE)</a>: "it is WP:UNDUE"  
@@ -134,53 +151,79 @@ CRITICAL: Find EVERY occurrence including explicit, implicit, and phrase forms!
 
 2. EXPLICIT WITHOUT WP: prefix - these are STILL guideline mentions:
    - "UGC", "user-generated content", "user generated" → WP:RS
-   - "NOTABLE", "notability", "notable" (in policy context) → WP:N
+   - "NOTABLE" or "WP:NOTABLE" (explicit guideline reference) → WP:N
    - "MOS:LABEL", "MOS:CAPS", just "MOS:" → MOS
 
-3. PHRASE mentions - COUNT THESE (CRITICAL):
-   - "reliable source" or "reliable sources" → WP:RS (MUST COUNT!)
-   - "independently notable" or "not notable" or "not itself notable" → WP:N (MUST COUNT!)
-   - "Manual of Style" → MOS
+3. PHRASE mentions - COUNT ONLY WHEN INVOKING THE GUIDELINE:
+   ⚠️ CRITICAL: Only count phrases that CLEARLY invoke the guideline as a Wikipedia rule!
+   
+   ✅ DO COUNT:
+   - "which reliable sources support this" → WP:RS (challenging per guideline)
+   - "it is not independently notable" → WP:N (ONLY with "independently" - clear guideline phrase)
+   - "WP:RS says..." or "per WP:RS" or "confusing WP:V and WP:RS" → WP:RS (explicit)
+   - "WP:NOTABLE" → WP:N (explicit shortcut ONLY)
+   
+   🚫 BLACKLIST - DON'T COUNT THESE AS WP:N:
+   ❌ "non-notable" → NOT WP:N (just adjective)
+   ❌ "its notability" → NOT WP:N (casual word use)
+   ❌ "quite relevant" → NOT WP:N (not guideline)
+   ❌ "makes it notable" → NOT WP:N (casual language)
+   
+   Only count "independently notable" or explicit "WP:N" / "WP:NOTABLE"!
 
 4. EXAMPLES OF WHAT TO COUNT:
-   - "which reliable sources support" = WP:RS
-   - "it is not independently notable" = WP:N
-   - "cartoon that is not itself notable" = WP:N
-   - "self-published work is a reliable source" = WP:RS
+   - "Which reliable sources support this particular image?" → WP:RS ✅ (challenging per guideline)
+   - "it is not independently notable" → WP:N ✅ ("independently notable" is guideline phrase)
+   - "therefore it is WP:NOTABLE" → WP:N ✅ (explicit shortcut)
+   - "You appear to be confusing WP:V and WP:RS" → WP:RS ✅ (explicit mention)
+   
+   EXAMPLES OF WHAT NOT TO COUNT:
+   - "the cartoon has been published on several news magazines" → NOT WP:RS ❌ (just stating sources exist)
+   - "makes it quite relevant" → NOT WP:N ❌ (not invoking guideline)
+   - "This non-notable source" → NOT WP:N ❌ (adjective, not guideline invocation)
+   - "its notability regarding the topic cannot be denied" → NOT WP:N ❌ (casual use of word)
 
 5. Case insensitive: WP:RS = wp:rs = RS = "reliable sources"
 
-6. FOUR-PASS SEARCH (DO ALL PASSES THOROUGHLY):
-   - Pass 1: Find all "WP:" and "MOS:" shortcuts
-   - Pass 2: Find guideline names as standalone words (NOTABLE, UGC, etc.)
-   - Pass 3: Find guideline PHRASES ("reliable sources", "notability", "not notable")
-   - Pass 4: Find contextual references ("which sources support", "is it notable")
+6. THREE-PASS SEARCH (DO ALL PASSES THOROUGHLY):
+   - Pass 1: Find all "WP:" and "MOS:" explicit shortcuts (e.g., "WP:RS", "WP:N")
+   - Pass 2: Find phrases that CLEARLY invoke the guideline (e.g., "which reliable sources support")
+   - Pass 3: Find contextual references where guideline is being applied (e.g., "not independently notable")
 
 7. Scan ALL sections, quotes, footnotes, nested replies
 
-REMEMBER: "reliable sources" without "WP:" is STILL WP:RS! Count it!
+REMEMBER: Be CONSERVATIVE with phrase detection - only count when the guideline is clearly being invoked as a Wikipedia rule, not casual word usage!
 
 OUTPUT FORMAT - List EVERY occurrence separately:
 CRITICAL RULES FOR COUNTING:
 1. Each line must quote from a DIFFERENT sentence in the discussion
-2. If policy appears in 2 different sentences, LIST BOTH (don't consolidate!)
-3. EXAMPLE: If "WP:NOTCENSORED" appears twice, list it twice:
-   - First occurrence: "This is not a matter of WP:NOTCENSORED"
-   - Second occurrence: "in blatant violation of WP:NOTCENSORED"
-4. Better to list MORE occurrences than to miss any
-5. Do NOT invent quotes that aren't in the discussion
+2. Only count phrases that CLEARLY invoke the guideline as a Wikipedia rule
+3. If explicit shortcut appears in 2 DIFFERENT sentences, LIST BOTH
+4. Do NOT list the same sentence twice with different quote lengths (that's the SAME occurrence!)
+5. For phrase mentions, only count if guideline is being APPLIED/CHALLENGED (not casual use)
+6. Do NOT count every instance of "reliable" or "notable" - only when guideline is invoked
+7. Do NOT invent quotes that aren't in the discussion
 
-Examples of GOOD uniqueness:
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "which reliable sources support this particular image"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "self-published work is a reliable source for a particular claim"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "you appear to be confusing WP:V and WP:RS"  
+EXAMPLE OF WRONG (duplicate from same sentence):
+❌ WP:RS: "You appear to be confusing WP:V and WP:RS"
+❌ WP:RS: "You appear to be confusing WP:V and WP:RS with WP:NPOV's WP:DUE"
+(These are the SAME sentence - only list ONCE!)
 
-Examples of BAD (redundant):
-❌ <a href="...">WP:RS</a>: "reliable sources"  
-❌ <a href="...">WP:RS</a>: "reliable sources"  
-❌ <a href="...">WP:RS</a>: "reliable sources"  (repeating same thing!)
+EXAMPLE OF RIGHT:
+✅ WP:RS: "You appear to be confusing WP:V and WP:RS with WP:NPOV's WP:DUE" (full quote, listed once)
 
-Each line MUST be from a DIFFERENT sentence/context!
+Examples of GOOD (clear guideline invocations):
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "Which reliable sources support this particular image?"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "You appear to be confusing WP:V and WP:RS"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:N" target="_blank">WP:N</a>: "it is not independently notable"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:N" target="_blank">WP:N</a>: "Moreover, this picture is used in cited sources, therefore it is WP:NOTABLE"  
+
+Examples of BAD (casual language, not guideline invocation):
+❌ <a href="...">WP:RS</a>: "The cartoon has been published on several news magazines" (just stating sources exist)
+❌ <a href="...">WP:N</a>: "makes it quite relevant" (not invoking notability guideline)
+❌ <a href="...">WP:RS</a>: "multiple reliable sources" (casual descriptive language)
+
+CRITICAL: Only count when guideline is being INVOKED/APPLIED/CHALLENGED, not casual word usage!
 
 If none found: "No guidelines explicitly mentioned in this discussion."
 """
