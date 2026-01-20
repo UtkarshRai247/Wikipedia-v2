@@ -9,7 +9,7 @@ from scrapers.wikitext_scraper import fetch_wikitext_section
 from analyzers.policy_extractor import extract_wikipedia_links, format_policy_list_with_context
 from analyzers.context_extractor import extract_all_policy_contexts
 from analyzers.openai_analyzer import identify_policies_with_openai
-from app.utils import add_highlight_ids
+from app.utils import add_highlight_ids, add_highlighting_to_llm_results
 
 # Create blueprint
 bp = Blueprint('main', __name__)
@@ -86,8 +86,14 @@ def analyze():
             guidelines_html = openai_results['guidelines']
             essays_html = openai_results['essays']
             
-            # Use the original discussion HTML
-            discussion_html_with_ids = discussion['html']
+            # Add highlighting and scrolling support to LLM results
+            print(f"\nAdding highlighting support to LLM results...")
+            policies_html, guidelines_html, essays_html, discussion_html_with_ids = add_highlighting_to_llm_results(
+                policies_html,
+                guidelines_html,
+                essays_html,
+                discussion['html']
+            )
         else:
             # Fallback to pattern-based detection
             print(f"\nOpenAI API key not found. Using pattern-based detection...")
