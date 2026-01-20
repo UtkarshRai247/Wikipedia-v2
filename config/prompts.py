@@ -47,12 +47,15 @@ CRITICAL: You MUST find EVERY occurrence, even indirect mentions!
 3. PHRASE mentions - COUNT THESE (MANDATORY):
    - "original research" or "Original Research" → WP:OR (MUST COUNT!)
    - "fails verification" or "fails verification as" → WP:V (MUST COUNT!)
+   - "uncivil" or "demonstrably uncivil" → WP:PA (MUST COUNT!)
    - "neutral point of view" → WP:NPOV
    - "no personal attacks" → WP:PA
 
 4. CRITICAL EXACT PHRASE RULES:
    ⚠️ If you see "original research", you MUST list it as WP:OR
    ⚠️ If you see "fails verification", you MUST list it as WP:V
+   ⚠️ If you see "uncivil", you MUST list it as WP:PA
+   ⚠️ If you see "WP:NOTCENSORED" twice, list it TWICE
    These are NOT optional - they are REQUIRED mentions!
 
 5. CONTEXT CLUES (for other patterns):
@@ -82,17 +85,21 @@ CRITICAL RULES FOR UNIQUENESS:
 3. Focus on MEANINGFUL different occurrences, not just word repetition
 4. Do NOT invent quotes that aren't in the discussion
 
-Examples of GOOD uniqueness:
-<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "it is WP:UNDUE"  
+Examples of GOOD counting (list each occurrence):
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (UNDUE)</a>: "it is WP:UNDUE"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (DUE)</a>: "it fails DUE"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (DUE)</a>: "WP:DUE is not about whether"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "WP:OR might be involved"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "appears to be original research"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "which is original research"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:V" target="_blank">WP:V</a>: "The WP:V claim by the OP"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:V" target="_blank">WP:V</a>: "it fails verification as a political cartoon"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:V" target="_blank">WP:V</a>: "the claim fails verification"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NOT" target="_blank">WP:NOT (NOTCENSORED)</a>: "This is not a matter of WP:NOTCENSORED"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NOT" target="_blank">WP:NOT (NOTCENSORED)</a>: "in blatant violation of WP:NOTCENSORED"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:PA" target="_blank">WP:PA</a>: "demonstrably uncivil to those who disagree"  
 
-Each line MUST be from a DIFFERENT sentence/context!
+List each occurrence separately - don't over-consolidate!
 
 If none found: "No policies explicitly mentioned in this discussion."
 """
@@ -154,11 +161,13 @@ CRITICAL: Find EVERY occurrence including explicit, implicit, and phrase forms!
 REMEMBER: "reliable sources" without "WP:" is STILL WP:RS! Count it!
 
 OUTPUT FORMAT - List EVERY occurrence separately:
-CRITICAL RULES FOR UNIQUENESS:
-1. Each line must quote from a DIFFERENT part of the discussion
-2. If "reliable sources" appears 10 times but in similar contexts, consolidate to 2-3 distinct mentions
-3. Do NOT list the same concept 10 times just because the phrase repeats
-4. Focus on MEANINGFUL different occurrences, not just word repetition
+CRITICAL RULES FOR COUNTING:
+1. Each line must quote from a DIFFERENT sentence in the discussion
+2. If policy appears in 2 different sentences, LIST BOTH (don't consolidate!)
+3. EXAMPLE: If "WP:NOTCENSORED" appears twice, list it twice:
+   - First occurrence: "This is not a matter of WP:NOTCENSORED"
+   - Second occurrence: "in blatant violation of WP:NOTCENSORED"
+4. Better to list MORE occurrences than to miss any
 5. Do NOT invent quotes that aren't in the discussion
 
 Examples of GOOD uniqueness:
@@ -263,11 +272,16 @@ CRITICAL SUCCESS METRICS (EQUALLY IMPORTANT):
 - UNIQUENESS: Each line must have a quote from a DIFFERENT part of the discussion
 
 WHAT COUNTS AS "DIFFERENT OCCURRENCES":
-✅ "which reliable sources" (in one paragraph) + "self-published work is a reliable source" (in different paragraph) = 2 occurrences
-❌ "reliable sources" repeated 10 times = NOT 10 occurrences, consolidate similar contexts
+✅ "WP:NOTCENSORED" in paragraph 1 + "WP:NOTCENSORED" in paragraph 2 = 2 occurrences (LIST BOTH!)
+✅ "WP:DUE" in sentence A + "WP:DUE" in sentence B = 2 occurrences (LIST BOTH!)
+⚠️ "reliable sources" repeated 10 times in same context = consolidate to 2-3 distinct mentions
 
-EQUALLY BAD: Missing real mentions OR inventing fake mentions OR repeating the same mention!
-Each occurrence must be from a DIFFERENT sentence/context in the discussion."""
+CRITICAL: If a policy appears in 2 DIFFERENT sentences, list it TWICE!
+- Don't over-consolidate - err on the side of listing more rather than less
+- If uncertain whether to list separately, LIST IT
+
+EQUALLY BAD: Missing real mentions OR inventing fake mentions!
+Each occurrence should be from a DIFFERENT sentence (but list all different sentences!)."""
 
 
 def get_analysis_prompt(category, discussion_text, max_chars=100000):

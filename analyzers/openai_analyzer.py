@@ -160,7 +160,7 @@ def identify_policies_with_openai(discussion_text, model="gpt-4o", temperature=0
                     {"role": "user", "content": full_prompt}
                 ],
                 temperature=temperature,
-                max_tokens=1500  # Increased since we're doing one call
+                max_tokens=2000  # Increased from 1500 to allow more complete listings
             )
             
             result_text = response.choices[0].message.content.strip()
