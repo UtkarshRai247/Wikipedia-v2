@@ -65,19 +65,19 @@ CRITICAL: You MUST find EVERY occurrence, even indirect mentions!
 7. Look in ALL sections, quotes, footnotes, nested replies
 
 OUTPUT FORMAT - List EVERY occurrence separately:
-CRITICAL RULES:
-1. Each occurrence must have a UNIQUE, DIFFERENT quote from the actual text
-2. Do NOT repeat the same quote multiple times
-3. Do NOT invent quotes that aren't in the discussion
-4. Only list what you actually find
+CRITICAL RULES FOR UNIQUENESS:
+1. Each line must quote from a DIFFERENT part of the discussion
+2. If a policy appears 10 times but in similar contexts, consolidate to the distinct meaningful mentions
+3. Focus on MEANINGFUL different occurrences, not just word repetition
+4. Do NOT invent quotes that aren't in the discussion
 
-Examples:
+Examples of GOOD uniqueness:
 <a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "it is WP:UNDUE"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "it fails DUE"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (DUE)</a>: "it fails DUE"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "WP:OR might be involved"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "appears to be original research"  
 
-Each line MUST have a different quote!
+Each line MUST be from a DIFFERENT sentence/context!
 
 If none found: "No policies explicitly mentioned in this discussion."
 """
@@ -139,18 +139,24 @@ CRITICAL: Find EVERY occurrence including explicit, implicit, and phrase forms!
 REMEMBER: "reliable sources" without "WP:" is STILL WP:RS! Count it!
 
 OUTPUT FORMAT - List EVERY occurrence separately:
-CRITICAL RULES:
-1. Each occurrence must have a UNIQUE, DIFFERENT quote from the actual text
-2. Do NOT repeat the same quote multiple times
-3. Do NOT invent quotes that aren't in the discussion
-4. Only list what you actually find
+CRITICAL RULES FOR UNIQUENESS:
+1. Each line must quote from a DIFFERENT part of the discussion
+2. If "reliable sources" appears 10 times but in similar contexts, consolidate to 2-3 distinct mentions
+3. Do NOT list the same concept 10 times just because the phrase repeats
+4. Focus on MEANINGFUL different occurrences, not just word repetition
+5. Do NOT invent quotes that aren't in the discussion
 
-Examples:
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "which reliable sources support"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "self-published work is a reliable source"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:N" target="_blank">WP:N</a>: "it is not independently notable"  
+Examples of GOOD uniqueness:
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "which reliable sources support this particular image"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "self-published work is a reliable source for a particular claim"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "you appear to be confusing WP:V and WP:RS"  
 
-Each line MUST have a different quote!
+Examples of BAD (redundant):
+❌ <a href="...">WP:RS</a>: "reliable sources"  
+❌ <a href="...">WP:RS</a>: "reliable sources"  
+❌ <a href="...">WP:RS</a>: "reliable sources"  (repeating same thing!)
+
+Each line MUST be from a DIFFERENT sentence/context!
 
 If none found: "No guidelines explicitly mentioned in this discussion."
 """
@@ -238,10 +244,15 @@ CRITICAL SUCCESS METRICS (EQUALLY IMPORTANT):
 - RECALL: 100% - find EVERY real occurrence (explicit + implicit + phrase form)
 - PRECISION: 100% - ONLY list what actually appears in the text (NO hallucinations!)
 - CATEGORIZATION: 100% - correct policy vs guideline vs essay
-- COMPLETENESS: If it appears 5 times, list it 5 times with 5 DIFFERENT quotes
+- COMPLETENESS: If it appears 5 times in DIFFERENT contexts, list it 5 times
+- UNIQUENESS: Each line must have a quote from a DIFFERENT part of the discussion
 
-EQUALLY BAD: Missing real mentions OR inventing fake mentions!
-Each occurrence must have a UNIQUE quote from the actual discussion text."""
+WHAT COUNTS AS "DIFFERENT OCCURRENCES":
+✅ "which reliable sources" (in one paragraph) + "self-published work is a reliable source" (in different paragraph) = 2 occurrences
+❌ "reliable sources" repeated 10 times = NOT 10 occurrences, consolidate similar contexts
+
+EQUALLY BAD: Missing real mentions OR inventing fake mentions OR repeating the same mention!
+Each occurrence must be from a DIFFERENT sentence/context in the discussion."""
 
 
 def get_analysis_prompt(category, discussion_text, max_chars=100000):
