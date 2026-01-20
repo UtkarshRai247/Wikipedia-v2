@@ -30,30 +30,54 @@ ALIAS RECOGNITION (these are the SAME policy):
 - WP:NOTCENSORED = WP:NOT subsection
 - WP:INDISCRIMINATE = WP:NOT subsection
 
-SEARCH INSTRUCTIONS - LOOSE INTERPRETATION:
-1. EXPLICIT references: WP:NPOV, WP:V, WP:OR, WP:PA, WP:NOT, WP:CIVIL, WP:AGF, etc.
-2. IMPLICIT references - catch these even without "WP:" prefix:
-   - "UNDUE", "DUE", "WEIGHT", "undue weight", "due weight" → WP:NPOV
-   - "BALANCE", "balanced", "imbalanced" when discussing policy/neutrality → WP:NPOV
-   - "CIRCULAR", "circular reasoning" when discussing sources/verification → WP:V
-   - "VERIFIABLE", "verifiability" when discussing sources → WP:V
-   - "censored", "censorship" when discussing content policy → WP:NOT
-3. CONTEXT MATTERS: "balance in Wikipedia's own voice" = policy reference
-4. Case insensitive: wp:npov = WP:NPOV
-5. THREE PASSES: 
-   - Pass 1: Find explicit "WP:" shortcuts
-   - Pass 2: Find standalone policy keywords (UNDUE, BALANCE, CIRCULAR, etc.)
-   - Pass 3: Find policy concepts in context (e.g., "fair and balanced" in policy discussion)
-6. Look in ALL sections, quotes, footnotes
+SEARCH INSTRUCTIONS - AGGRESSIVE LOOSE INTERPRETATION:
+CRITICAL: You MUST find EVERY occurrence, even indirect mentions!
+
+1. EXPLICIT WITH WP: prefix: WP:NPOV, WP:V, WP:OR, WP:NOR, WP:PA, WP:NPA, etc.
+
+2. EXPLICIT WITHOUT WP: prefix - these are STILL policy mentions:
+   - "UNDUE", "DUE", "WEIGHT", "undue weight" → WP:NPOV
+   - "BALANCE", "balanced", "imbalanced" (in policy context) → WP:NPOV
+   - "VERIFIABLE", "WP:VERIFIABLE", "verifiability" → WP:V
+   - "CIRCULAR", "WP:Circular", "circular reasoning" → WP:V
+   - "NOTCENSORED", "WP:NOTCENSORED", "not censored" → WP:NOT
+   - "INDISCRIMINATE", "WP:NOT#INDISCRIMINATE" → WP:NOT
+   - Just "OR" when clearly referring to policy → WP:OR
+
+3. PHRASE mentions - COUNT THESE:
+   - "original research" or "Original Research" → WP:OR
+   - "neutral point of view" → WP:NPOV
+   - "no personal attacks" → WP:PA
+
+4. CONTEXT CLUES:
+   - If someone says "it fails DUE" → that's WP:NPOV (DUE)
+   - If someone says "this is original research" → that's WP:OR
+   - If someone says "it's verifiable" → that's WP:V
+
+5. Case insensitive: wp:npov = WP:NPOV = NPOV = npov
+
+6. SCAN METHODOLOGY:
+   - Pass 1: Find all "WP:" shortcuts
+   - Pass 2: Find policy names as standalone words (UNDUE, DUE, VERIFIABLE, CIRCULAR, etc.)
+   - Pass 3: Find policy phrases ("original research", "verifiability", "due weight")
+   - Pass 4: Find contextual references in sentences
+
+7. Look in ALL sections, quotes, footnotes, nested replies
 
 OUTPUT FORMAT - List EVERY occurrence separately:
-CRITICAL: If a policy appears 5 times, list it 5 times with 5 different quotes!
+CRITICAL RULES:
+1. Each occurrence must have a UNIQUE, DIFFERENT quote from the actual text
+2. Do NOT repeat the same quote multiple times
+3. Do NOT invent quotes that aren't in the discussion
+4. Only list what you actually find
 
-<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "Quote from 1st mention"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "Quote from 2nd mention"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "Quote from 3rd mention"  
+Examples:
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "it is WP:UNDUE"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "it fails DUE"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "WP:OR might be involved"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "appears to be original research"  
 
-Do NOT deduplicate - list every single occurrence!
+Each line MUST have a different quote!
 
 If none found: "No policies explicitly mentioned in this discussion."
 """
@@ -145,7 +169,9 @@ Do NOT deduplicate - list every single occurrence!
 If none found: "No essays explicitly mentioned in this discussion."
 """
 
-SYSTEM_PROMPT = """You are an EXPERT Wikipedia policy analyst. ACCURACY REQUIREMENT: 100%
+SYSTEM_PROMPT = """You are an EXPERT Wikipedia policy analyst. ACCURACY: 100% recall + 100% precision
+
+CRITICAL BALANCE: Find ALL real mentions BUT do not hallucinate or invent mentions!
 
 STRICT CATEGORY ENFORCEMENT:
 You will be asked to find POLICIES, GUIDELINES, or ESSAYS separately.
@@ -162,28 +188,39 @@ ALIAS RECOGNITION (crucial for accuracy):
 - WP:UGC is part of WP:RS → report as "WP:RS (UGC)"
 - MOS:LABEL is part of MOS → report as "MOS:LABEL"
 
-SEARCH RULES - LOOSE INTERPRETATION:
-1. EXHAUSTIVE: Scan every line, paragraph, quote, footnote
-2. THREE-PASS SEARCH: 
-   - Pass 1: Explicit shortcuts (WP:NPOV, MOS:LABEL)
-   - Pass 2: Standalone keywords (UNDUE, BALANCE, UGC, CIRCULAR)
-   - Pass 3: Contextual references ("balance in Wikipedia's voice", "reliable sources")
-3. CASE INSENSITIVE: "WP:NPOV" = "wp:npov" = "Wp:NPOV" = "npov"
-4. CONTEXT AWARE: Include implicit policy references
-   - "per NPOV" or "violates OR" → counts
-   - "fair and balanced" in policy context → counts as NPOV
-   - "user-generated content" → counts as RS/UGC
-   - "balance in Wikipedia's own voice" → counts as NPOV/BALANCE
-5. FAMILY AWARE: "UNDUE"/"DUE"/"WEIGHT"/"BALANCE" → NPOV; "CIRCULAR" → V; "UGC" → RS
-6. AVOID OBVIOUS FALSE POSITIVES: "NOT" alone in non-policy context ≠ WP:NOT
+SEARCH RULES - AGGRESSIVE INTERPRETATION:
+1. EXHAUSTIVE: Scan EVERY line, EVERY paragraph, EVERY quote, EVERY footnote
+2. FOUR-PASS SEARCH - do all passes thoroughly:
+   - Pass 1: Explicit shortcuts (WP:NPOV, WP:OR, WP:V, MOS:LABEL)
+   - Pass 2: Shortcuts without WP: (UNDUE, DUE, VERIFIABLE, CIRCULAR, UGC)
+   - Pass 3: Policy phrases ("original research", "undue weight", "verifiability")
+   - Pass 4: Contextual references ("it's due", "balance in Wikipedia's voice")
+3. CASE INSENSITIVE: "WP:NPOV" = "wp:npov" = "NPOV" = "npov"
+4. COUNT EVERYTHING - examples that MUST be counted:
+   - "original research" = WP:OR
+   - "it fails DUE" = WP:NPOV (DUE)
+   - "WP:VERIFIABLE" = WP:V
+   - "that's circular" = WP:V (CIRCULAR)
+   - "user-generated content" = WP:RS (UGC)
+5. FAMILY AWARE: UNDUE/DUE/WEIGHT/BALANCE → NPOV; VERIFIABLE/CIRCULAR → V; UGC/SPS → RS
+6. AVOID OBVIOUS FALSE POSITIVES: "NOT" alone (not in policy context) ≠ WP:NOT
 
-LISTING ALL OCCURRENCES:
-- List EVERY occurrence separately (if mentioned 5 times, list it 5 times)
-- Each mention should have its own line with the specific quote where it appears
-- Group aliases under parent policy (UNDUE → list as "WP:NPOV (WEIGHT/UNDUE)")
-- Do NOT deduplicate - we want to see all mentions
+LISTING ALL OCCURRENCES - CRITICAL REQUIREMENT:
+- Find EVERY occurrence including explicit (WP:OR), implicit (just "DUE"), and phrase form ("original research")
+- List each occurrence on its own line with the specific quote
+- If mentioned 5 times in ANY form, you MUST list it 5 times
+- Group aliases under parent (UNDUE → "WP:NPOV", "original research" → "WP:OR")
+- Do NOT deduplicate - we want to count EVERY mention
+- Missing mentions is the #1 error to avoid
 
-TARGET: 100% recall + 100% precision + correct categorization"""
+CRITICAL SUCCESS METRICS (EQUALLY IMPORTANT):
+- RECALL: 100% - find EVERY real occurrence (explicit + implicit + phrase form)
+- PRECISION: 100% - ONLY list what actually appears in the text (NO hallucinations!)
+- CATEGORIZATION: 100% - correct policy vs guideline vs essay
+- COMPLETENESS: If it appears 5 times, list it 5 times with 5 DIFFERENT quotes
+
+EQUALLY BAD: Missing real mentions OR inventing fake mentions!
+Each occurrence must have a UNIQUE quote from the actual discussion text."""
 
 
 def get_analysis_prompt(category, discussion_text, max_chars=100000):

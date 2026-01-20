@@ -106,7 +106,7 @@ def format_structured_text(sections):
     return structured_text
 
 
-def identify_policies_with_openai(discussion_text, model="gpt-4o-mini", temperature=0.3, section_size=8000):
+def identify_policies_with_openai(discussion_text, model="gpt-4o", temperature=0.1, section_size=8000):
     """
     Use OpenAI to identify policies, guidelines, and essays in a Wikipedia discussion.
     Uses structured sections in a single API call per category for optimal performance.
