@@ -46,8 +46,14 @@ SEARCH INSTRUCTIONS - LOOSE INTERPRETATION:
    - Pass 3: Find policy concepts in context (e.g., "fair and balanced" in policy discussion)
 6. Look in ALL sections, quotes, footnotes
 
-OUTPUT FORMAT - List as parent policy with alias:
-<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: Quote where mentioned
+OUTPUT FORMAT - List EVERY occurrence separately:
+CRITICAL: If a policy appears 5 times, list it 5 times with 5 different quotes!
+
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "Quote from 1st mention"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "Quote from 2nd mention"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (WEIGHT/UNDUE)</a>: "Quote from 3rd mention"  
+
+Do NOT deduplicate - list every single occurrence!
 
 If none found: "No policies explicitly mentioned in this discussion."
 """
@@ -92,9 +98,14 @@ SEARCH INSTRUCTIONS - LOOSE INTERPRETATION:
    - Pass 3: Find guideline concepts in context (e.g., "reliable sources" in policy discussion)
 6. Scan ALL sections thoroughly
 
-OUTPUT FORMAT:
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: Quote where mentioned
-<a href="https://en.wikipedia.org/wiki/Wikipedia:MOS#LABEL" target="_blank">MOS:LABEL</a>: Quote where mentioned
+OUTPUT FORMAT - List EVERY occurrence separately:
+CRITICAL: If a guideline appears 3 times, list it 3 times with 3 different quotes!
+
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "Quote from 1st mention"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "Quote from 2nd mention"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:MOS#LABEL" target="_blank">MOS:LABEL</a>: "Quote from mention"  
+
+Do NOT deduplicate - list every single occurrence!
 
 If none found: "No guidelines explicitly mentioned in this discussion."
 """
@@ -125,8 +136,11 @@ SEARCH INSTRUCTIONS:
 3. Case insensitive: wp:1am = WP:1AM
 4. Scan ALL sections
 
-OUTPUT FORMAT:
-<a href="https://en.wikipedia.org/wiki/Wikipedia:1AM" target="_blank">WP:1AM</a>: Quote where mentioned
+OUTPUT FORMAT - List EVERY occurrence separately:
+<a href="https://en.wikipedia.org/wiki/Wikipedia:1AM" target="_blank">WP:1AM</a>: "Quote from 1st mention"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:1AM" target="_blank">WP:1AM</a>: "Quote from 2nd mention"  
+
+Do NOT deduplicate - list every single occurrence!
 
 If none found: "No essays explicitly mentioned in this discussion."
 """
@@ -163,9 +177,11 @@ SEARCH RULES - LOOSE INTERPRETATION:
 5. FAMILY AWARE: "UNDUE"/"DUE"/"WEIGHT"/"BALANCE" → NPOV; "CIRCULAR" → V; "UGC" → RS
 6. AVOID OBVIOUS FALSE POSITIVES: "NOT" alone in non-policy context ≠ WP:NOT
 
-DEDUPLICATION:
-- List each policy/guideline/essay ONCE even if mentioned 10 times
-- Group aliases together (e.g., don't list both WEIGHT and UNDUE separately)
+LISTING ALL OCCURRENCES:
+- List EVERY occurrence separately (if mentioned 5 times, list it 5 times)
+- Each mention should have its own line with the specific quote where it appears
+- Group aliases under parent policy (UNDUE → list as "WP:NPOV (WEIGHT/UNDUE)")
+- Do NOT deduplicate - we want to see all mentions
 
 TARGET: 100% recall + 100% precision + correct categorization"""
 
