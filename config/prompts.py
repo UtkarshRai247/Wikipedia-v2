@@ -105,31 +105,52 @@ ALIAS RECOGNITION:
 - WP:N = WP:NOTABLE = WP:GNG = same guideline
 - MOS:LABEL = Manual of Style subsection (use "MOS:" prefix!)
 
-SEARCH INSTRUCTIONS - LOOSE INTERPRETATION:
-1. EXPLICIT references: WP:RS, WP:N, WP:UGC, WP:CITE, WP:EL, MOS:LABEL, etc.
-2. IMPLICIT references - catch these even without "WP:" prefix:
-   - "UGC", "user-generated content", "user generated" when discussing sources → WP:RS
-   - "reliable source", "reliable sources" → WP:RS
-   - "notable", "notability" when discussing article content → WP:N
-   - "MOS", "Manual of Style", "style guidelines" → MOS
-3. MOS SPECIAL HANDLING:
-   - Search for "MOS:LABEL", "MOS:CAPS", "MOS:" prefix
-   - Also catch "Manual of Style" or "MOS" in context
-4. Case insensitive: wp:rs = WP:RS
-5. THREE PASSES: 
-   - Pass 1: Find explicit "WP:" and "MOS:" shortcuts
-   - Pass 2: Find standalone guideline keywords (UGC, LABEL, etc.)
-   - Pass 3: Find guideline concepts in context (e.g., "reliable sources" in policy discussion)
-6. Scan ALL sections thoroughly
+SEARCH INSTRUCTIONS - AGGRESSIVE LOOSE INTERPRETATION:
+CRITICAL: Find EVERY occurrence including explicit, implicit, and phrase forms!
+
+1. EXPLICIT WITH WP: prefix: WP:RS, WP:N, WP:UGC, WP:CITE, WP:EL, MOS:LABEL
+
+2. EXPLICIT WITHOUT WP: prefix - these are STILL guideline mentions:
+   - "UGC", "user-generated content", "user generated" → WP:RS
+   - "NOTABLE", "notability", "notable" (in policy context) → WP:N
+   - "MOS:LABEL", "MOS:CAPS", just "MOS:" → MOS
+
+3. PHRASE mentions - COUNT THESE (CRITICAL):
+   - "reliable source" or "reliable sources" → WP:RS (MUST COUNT!)
+   - "independently notable" or "not notable" or "not itself notable" → WP:N (MUST COUNT!)
+   - "Manual of Style" → MOS
+
+4. EXAMPLES OF WHAT TO COUNT:
+   - "which reliable sources support" = WP:RS
+   - "it is not independently notable" = WP:N
+   - "cartoon that is not itself notable" = WP:N
+   - "self-published work is a reliable source" = WP:RS
+
+5. Case insensitive: WP:RS = wp:rs = RS = "reliable sources"
+
+6. FOUR-PASS SEARCH (DO ALL PASSES THOROUGHLY):
+   - Pass 1: Find all "WP:" and "MOS:" shortcuts
+   - Pass 2: Find guideline names as standalone words (NOTABLE, UGC, etc.)
+   - Pass 3: Find guideline PHRASES ("reliable sources", "notability", "not notable")
+   - Pass 4: Find contextual references ("which sources support", "is it notable")
+
+7. Scan ALL sections, quotes, footnotes, nested replies
+
+REMEMBER: "reliable sources" without "WP:" is STILL WP:RS! Count it!
 
 OUTPUT FORMAT - List EVERY occurrence separately:
-CRITICAL: If a guideline appears 3 times, list it 3 times with 3 different quotes!
+CRITICAL RULES:
+1. Each occurrence must have a UNIQUE, DIFFERENT quote from the actual text
+2. Do NOT repeat the same quote multiple times
+3. Do NOT invent quotes that aren't in the discussion
+4. Only list what you actually find
 
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "Quote from 1st mention"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "Quote from 2nd mention"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:MOS#LABEL" target="_blank">MOS:LABEL</a>: "Quote from mention"  
+Examples:
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "which reliable sources support"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:RS" target="_blank">WP:RS</a>: "self-published work is a reliable source"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:N" target="_blank">WP:N</a>: "it is not independently notable"  
 
-Do NOT deduplicate - list every single occurrence!
+Each line MUST have a different quote!
 
 If none found: "No guidelines explicitly mentioned in this discussion."
 """
