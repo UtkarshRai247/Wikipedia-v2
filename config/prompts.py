@@ -44,25 +44,36 @@ CRITICAL: You MUST find EVERY occurrence, even indirect mentions!
    - "INDISCRIMINATE", "WP:NOT#INDISCRIMINATE" → WP:NOT
    - Just "OR" when clearly referring to policy → WP:OR
 
-3. PHRASE mentions - COUNT THESE:
-   - "original research" or "Original Research" → WP:OR
+3. PHRASE mentions - COUNT THESE (MANDATORY):
+   - "original research" or "Original Research" → WP:OR (MUST COUNT!)
+   - "fails verification" or "fails verification as" → WP:V (MUST COUNT!)
    - "neutral point of view" → WP:NPOV
    - "no personal attacks" → WP:PA
 
-4. CONTEXT CLUES:
+4. CRITICAL EXACT PHRASE RULES:
+   ⚠️ If you see "original research", you MUST list it as WP:OR
+   ⚠️ If you see "fails verification", you MUST list it as WP:V
+   These are NOT optional - they are REQUIRED mentions!
+
+5. CONTEXT CLUES (for other patterns):
    - If someone says "it fails DUE" → that's WP:NPOV (DUE)
-   - If someone says "this is original research" → that's WP:OR
-   - If someone says "it's verifiable" → that's WP:V
+   - If someone says "it's verifiable" → WP:V (check context)
+   - "verification" alone → WP:V (only if in policy context)
 
 5. Case insensitive: wp:npov = WP:NPOV = NPOV = npov
 
-6. SCAN METHODOLOGY:
-   - Pass 1: Find all "WP:" shortcuts
-   - Pass 2: Find policy names as standalone words (UNDUE, DUE, VERIFIABLE, CIRCULAR, etc.)
-   - Pass 3: Find policy phrases ("original research", "verifiability", "due weight")
-   - Pass 4: Find contextual references in sentences
+6. SCAN METHODOLOGY (DO ALL PASSES):
+   - Pass 1: Find all "WP:" shortcuts (WP:OR, WP:V, WP:NPOV, etc.)
+   - Pass 2: Find policy names as standalone words (UNDUE, DUE, VERIFIABLE, CIRCULAR)
+   - Pass 3: Find EXACT MANDATORY phrases:
+     * "original research" → WP:OR (MUST find!)
+     * "fails verification" → WP:V (MUST find!)
+   - Pass 4: Find other policy phrases in context ("verifiability", "due weight")
+   - Pass 5: Find contextual references in sentences
 
 7. Look in ALL sections, quotes, footnotes, nested replies
+
+REMEMBER: Missing "original research" or "fails verification" is a CRITICAL ERROR!
 
 OUTPUT FORMAT - List EVERY occurrence separately:
 CRITICAL RULES FOR UNIQUENESS:
@@ -76,6 +87,10 @@ Examples of GOOD uniqueness:
 <a href="https://en.wikipedia.org/wiki/Wikipedia:NPOV" target="_blank">WP:NPOV (DUE)</a>: "it fails DUE"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "WP:OR might be involved"  
 <a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "appears to be original research"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:OR" target="_blank">WP:OR</a>: "which is original research"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:V" target="_blank">WP:V</a>: "The WP:V claim by the OP"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:V" target="_blank">WP:V</a>: "it fails verification as a political cartoon"  
+<a href="https://en.wikipedia.org/wiki/Wikipedia:V" target="_blank">WP:V</a>: "the claim fails verification"  
 
 Each line MUST be from a DIFFERENT sentence/context!
 
