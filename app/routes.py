@@ -55,6 +55,8 @@ def analyze():
         if not url:
             return jsonify({'error': 'No URL provided'}), 400
         
+
+
         print(f"\n{'='*60}")
         print(f"Starting analysis for: {url}")
         print(f"{'='*60}")

@@ -4,89 +4,140 @@ OpenAI Prompts for Wikipedia Policy/Guideline/Essay Identification
 This module stores all prompts used for analyzing Wikipedia discussions.
 """
 
-POLICIES_PROMPT = """You are analyzing a Wikipedia talk page discussion. Your task is to identify Wikipedia POLICIES that are actually DISCUSSED, MENTIONED, DEBATED, or REFERENCED in the conversation.
+POLICIES_PROMPT = """You are analyzing a Wikipedia talk page discussion. Your task is to identify ALL Wikipedia POLICIES that are DISCUSSED, MENTIONED, DEBATED, or REFERENCED.
 
-IMPORTANT: Only identify policies that are ACTUALLY mentioned or discussed in the text provided. Do NOT assume or infer policies based on topic - only list what is explicitly present.
+CRITICAL INSTRUCTIONS FOR 100% ACCURACY:
 
-Wikipedia POLICIES (mandatory rules) include:
-- Core content: NPOV (Neutral Point of View), Verifiability (V), No Original Research (NOR)
-- Biographical: Biographies of Living Persons (BLP)
-- Behavioral: Edit warring (3RR), Civility, No personal attacks (NPA), Assume good faith (AGF), Consensus
-- Content: What Wikipedia is Not (NOT), Copyright (COPY), Conflict of interest (COI)
-- Access: Accessibility, Alternative text
-- Other: Paid editing, Sock puppetry, Vandalism
+1. SEARCH EXHAUSTIVELY for ALL of these patterns:
+   - Shortcuts with WP: prefix (e.g., "WP:NPOV", "WP:OR", "WP:V", "WP:PA", "WP:WEIGHT")
+   - Shortcuts without WP: prefix but in context (e.g., "per NPOV", "violates OR")
+   - Full policy names (e.g., "Neutral Point of View", "No Original Research")
+   - Wikilinks: [[WP:NPOV]], [[Wikipedia:NPOV]]
+   - Lowercase/mixed case: "wp:npov", "Wp:NPOV"
 
-Common shortcuts: WP:NPOV, WP:V, WP:NOR, WP:BLP, WP:3RR, WP:CIVIL, WP:NPA, WP:AGF, WP:CON, WP:NOT, WP:COPYVIO, WP:COI
+2. POLICY FAMILIES - Many shortcuts are sub-policies:
+   - NPOV family: WP:NPOV, WP:WEIGHT, WP:UNDUE, WP:BALANCE, WP:IMPARTIAL
+   - V (Verifiability) family: WP:V, WP:CIRCULAR, WP:VERIFY
+   - NOT family: WP:NOT, WP:NOTCENSORED, WP:INDISCRIMINATE, WP:NOTGUIDE
+   - OR family: WP:OR, WP:NOR, WP:SYNTHESIS
+   - Behavioral: WP:PA, WP:NPA, WP:CIVIL, WP:AGF, WP:3RR
 
-Look for:
-- Explicit mentions of policy names or shortcuts (e.g., "per WP:NPOV", "violates BLP")
-- Direct quotes or paraphrasing of policy language
-- Discussions about policy application or interpretation
-- Disputes referencing policies
+3. SCAN EVERY SECTION THOROUGHLY:
+   - Check each paragraph
+   - Look in quotes and citations
+   - Check image captions and footnotes
+   - Search in nested discussion threads
 
-Format each as: <a href="https://en.wikipedia.org/wiki/Wikipedia:PolicyName" target="_blank">Policy Name</a>: Brief quote or explanation of how it's discussed.
+4. AVOID FALSE POSITIVES:
+   - ONLY count if it has "WP:" prefix OR is clearly used as a policy shortcut
+   - Do NOT count: standalone words like "NOT", "IMAGE", "CENSORSHIP" without context
+   - Do NOT count: "RFC", "RfC" unless it's a policy reference
 
-If NO policies are actually mentioned in the discussion, respond with EXACTLY: "No policies explicitly mentioned in this discussion."
+5. OUTPUT FORMAT:
+   For each policy found, output:
+   <a href="https://en.wikipedia.org/wiki/Wikipedia:PolicyName" target="_blank">WP:SHORTCUT</a>: Brief quote showing usage
+
+If NO policies found: "No policies explicitly mentioned in this discussion."
 """
 
-GUIDELINES_PROMPT = """You are analyzing a Wikipedia talk page discussion. Your task is to identify Wikipedia GUIDELINES that are actually DISCUSSED, MENTIONED, or REFERENCED in the conversation.
+GUIDELINES_PROMPT = """You are analyzing a Wikipedia talk page discussion. Your task is to identify ALL Wikipedia GUIDELINES that are DISCUSSED, MENTIONED, or REFERENCED.
 
-IMPORTANT: Only identify guidelines that are ACTUALLY mentioned or discussed in the text provided. Do NOT assume or infer guidelines based on topic - only list what is explicitly present.
+CRITICAL INSTRUCTIONS FOR 100% ACCURACY:
 
-Wikipedia GUIDELINES (best-practice recommendations) include:
-- Content: Notability (N), Reliable Sources (RS), Identifying reliable sources
-- Style: Manual of Style (MOS), Article titles, Lead sections, Article size
-- Technical: Citing sources (CITE), External links (EL), Categories
-- Layout: Accessibility (ACCESS), Section organization, Infoboxes
-- Images: Image use policy, Alternative text for images (ALT)
-- Behavior: Bold, revert, discuss cycle (BRD), Editing policy
+1. SEARCH EXHAUSTIVELY for ALL of these patterns:
+   - Shortcuts with WP: prefix (e.g., "WP:N", "WP:RS", "WP:UGC")
+   - Manual of Style shortcuts: "MOS:LABEL", "MOS:CAPS", "MOS:BOLD" (note: MOS not WP!)
+   - Full guideline names (e.g., "Notability", "Reliable Sources")
+   - Wikilinks: [[WP:RS]], [[Wikipedia:Notability]]
+   - Lowercase/mixed case: "wp:rs", "Wp:N"
 
-Common shortcuts: WP:N, WP:RS, WP:MOS, WP:CITE, WP:EL, WP:ACCESS, WP:BRD, WP:ALT
+2. GUIDELINE FAMILIES - Many shortcuts are sub-guidelines:
+   - RS (Reliable Sources) family: WP:RS, WP:UGC, WP:SPS, WP:NEWSORG
+   - Notability family: WP:N, WP:GNG, WP:NBOOK, WP:NMUSIC
+   - MOS (Manual of Style) family: MOS:LABEL, MOS:CAPS, MOS:BOLD, MOS:LINK
+   - Content guidelines: WP:CITE, WP:EL, WP:CAT
 
-Look for:
-- Explicit mentions of guideline names or shortcuts (e.g., "per WP:RS", "according to MOS")
-- Discussions about notability, reliable sources, formatting
-- Accessibility concerns (mobile display, screen readers, etc.)
-- Citation or sourcing discussions
-- Article structure or style debates
+3. SPECIAL ATTENTION:
+   - MOS shortcuts use "MOS:" NOT "WP:" (e.g., MOS:LABEL not WP:LABEL)
+   - Check for "Manual of Style" spelled out
+   - Look for style/formatting discussions that reference MOS
 
-Format each as: <a href="https://en.wikipedia.org/wiki/Wikipedia:GuidelineName" target="_blank">Guideline Name</a>: Brief quote or explanation.
+4. SCAN EVERY SECTION THOROUGHLY:
+   - Check each paragraph
+   - Look in quotes and citations  
+   - Check image captions and footnotes
+   - Search in nested discussion threads
 
-If NO guidelines are actually mentioned in the discussion, respond with EXACTLY: "No guidelines explicitly mentioned in this discussion."
+5. AVOID FALSE POSITIVES:
+   - ONLY count if it has "WP:" or "MOS:" prefix OR is clearly used as a guideline shortcut
+   - Do NOT count: standalone words without context
+
+6. OUTPUT FORMAT:
+   For each guideline found, output:
+   <a href="https://en.wikipedia.org/wiki/Wikipedia:GuidelineName" target="_blank">WP:SHORTCUT</a>: Brief quote showing usage
+
+If NO guidelines found: "No guidelines explicitly mentioned in this discussion."
 """
 
-ESSAYS_PROMPT = """You are analyzing a Wikipedia talk page discussion. Your task is to identify Wikipedia ESSAYS that are mentioned or referenced.
+ESSAYS_PROMPT = """You are analyzing a Wikipedia talk page discussion. Your task is to identify ALL Wikipedia ESSAYS that are mentioned or referenced.
 
-IMPORTANT: Only identify essays that are ACTUALLY mentioned in the text provided. Essays are opinion/advice pages written by editors - they are NOT official policy or guidelines.
+CRITICAL INSTRUCTIONS FOR 100% ACCURACY:
 
-Common Wikipedia ESSAYS include:
-- WP:COMMON (Common sense)
-- WP:IAR (Ignore all rules)  
-- WP:DEADLINE (There is no deadline)
-- WP:STICK (Stick to the point)
-- WP:BEANS (Don't explain how to game the system)
-- WP:SNOW (Snowball clause)
-- WP:Randy (Randy in Boise)
-- WP:DNFTT (Don't feed the trolls)
+1. SEARCH EXHAUSTIVELY for ALL of these patterns:
+   - Shortcuts with WP: prefix (e.g., "WP:1AM", "WP:IAR", "WP:COMMON")
+   - Essay numbers: "WP:1AM" (One Against Many)
+   - Full essay names (e.g., "One Against Many", "Ignore All Rules")
+   - Wikilinks: [[WP:1AM]], [[Wikipedia:One Against Many]]
+   - Lowercase/mixed case: "wp:1am", "Wp:IAR"
 
-Look for:
-- Explicit mentions of essay shortcuts or titles
-- Links to Wikipedia essay pages
-- Phrases like "as the essay says" or "per WP:ESSAY"
+2. COMMON ESSAYS TO LOOK FOR:
+   - WP:1AM (One Against Many)
+   - WP:IAR (Ignore All Rules)
+   - WP:DEADLINE (There Is No Deadline)
+   - WP:COMMON (Common Sense)
+   - WP:STICK (Stick to the Point)
+   - WP:BEANS (Don't Explain How to Game the System)
+   - WP:SNOW (Snowball Clause)
+   - WP:RANDY (Randy in Boise)
+   - WP:DNFTT (Don't Feed the Trolls)
 
-Format each as: <a href="https://en.wikipedia.org/wiki/Wikipedia:EssayName" target="_blank">Essay Name</a>: Brief quote or context.
+3. SCAN EVERY SECTION THOROUGHLY:
+   - Check each paragraph
+   - Look in quotes and citations
+   - Check image captions and footnotes
+   - Search in nested discussion threads
 
-If NO essays are actually mentioned in the discussion, respond with EXACTLY: "No essays explicitly mentioned in this discussion."
+4. AVOID FALSE POSITIVES:
+   - ONLY count if it has "WP:" prefix OR is clearly used as an essay shortcut
+   - Essays are opinion pages, not official policy
+
+5. OUTPUT FORMAT:
+   For each essay found, output:
+   <a href="https://en.wikipedia.org/wiki/Wikipedia:EssayName" target="_blank">WP:SHORTCUT</a>: Brief quote showing usage
+
+If NO essays found: "No essays explicitly mentioned in this discussion."
 """
 
-SYSTEM_PROMPT = """You are an expert at analyzing Wikipedia talk page discussions and identifying which Wikipedia policies, guidelines, and essays are explicitly mentioned or discussed. 
+SYSTEM_PROMPT = """You are an EXPERT Wikipedia policy analyst with 100% accuracy requirements.
 
-You must be precise and only identify items that are actually present in the text. Do not infer or assume based on the topic being discussed. Only report what is explicitly mentioned.
+YOUR MISSION: Find EVERY SINGLE policy/guideline/essay mention with ZERO misses.
 
-When analyzing multi-section discussions:
-- Read through ALL sections systematically
-- List each unique policy/guideline/essay only ONCE (even if mentioned multiple times)
-- Provide context from the most relevant mention"""
+CORE RULES:
+1. EXHAUSTIVE SEARCH: Scan every single line, paragraph, quote, and footnote
+2. PATTERN RECOGNITION: Look for "WP:", "MOS:", shortcuts, full names, wikilinks
+3. CASE INSENSITIVE: Match "WP:NPOV", "wp:npov", "Wp:NPOV" all the same
+4. FAMILY AWARENESS: Recognize sub-policies (e.g., WP:WEIGHT is part of NPOV family)
+5. NO FALSE POSITIVES: Only count actual policy references with proper context
+6. DEDUPLICATION: List each unique item ONCE even if mentioned multiple times
+7. MULTI-SECTION: Read ALL sections systematically, don't skip any
+
+FALSE POSITIVE PREVENTION:
+- "NOT" alone ≠ WP:NOT (need "WP:" or clear policy context)
+- "IMAGE" alone ≠ policy (need "WP:" prefix)
+- "CENSORSHIP" alone ≠ WP:NOTCENSORED (need shortcut)
+- "RFC" or "RfC" ≠ policy (it's a process, not a policy)
+
+ACCURACY TARGET: 100% recall (find all mentions) with 100% precision (no false positives)"""
 
 
 def get_analysis_prompt(category, discussion_text, max_chars=100000):
