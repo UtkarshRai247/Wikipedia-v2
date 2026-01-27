@@ -94,6 +94,7 @@ def analyze():
                 essays_html,
                 discussion['html']
             )
+
         else:
             # Fallback to pattern-based detection
             print(f"\nOpenAI API key not found. Using pattern-based detection...")
@@ -132,6 +133,9 @@ def analyze():
             'guidelines': guidelines_html,
             'essays': essays_html
         })
+
+
+
         
     except Exception as e:
         print(f"\n✗ Error in analyze endpoint: {e}")
