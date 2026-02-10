@@ -5,7 +5,7 @@ Professional Flask application for analyzing Wikipedia talk page discussions
 and identifying policy, guideline, and essay mentions.
 
 Author: Utkarsh Rai
-Repository: https://github.com/YEETlord247/WIkipedia-Policy-Scraping
+Repository: https://github.com/UtkarshRai247/Wikipedia-v2
 """
 
 import os
