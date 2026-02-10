@@ -12,6 +12,7 @@ _Nothing yet._
 
 ## February 10, 2026
 
+- **Changelog added** — This changelog file was added so everyone can see what’s changed in the project in plain language.
 - **Project link updated** — The reference to this project’s GitHub page in the app code was updated to point to the correct repository.
 
 ---
