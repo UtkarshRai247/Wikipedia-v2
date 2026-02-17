@@ -1,12 +1,21 @@
 # Changelog
 
-All notable changes to the Wikipedia Talk Page Policy Analyzer are listed here in plain language. Newest changes appear at the top.
+All notable changes to the Wikipedia Talk Page Policy Analyzer are listed here in plain language. Newest changes appear at the top. Version numbers follow the format **Vx.y**.
 
 ---
 
 ## [Unreleased]
 
 _Nothing yet._
+
+---
+
+## [V1.7] - 2026-02-10
+
+- **Heading-based sectioning** — When wikitext is available, the analyzer now splits the discussion by wikitext headings (`== Heading ==`) so each section is "heading + following posts" instead of fixed-size character chunks. This keeps thread context and improves accuracy.
+- **Wikitext parser** — Added `split_wikitext_by_headings()` to split raw wikitext by heading lines; the OpenAI path uses this when `discussion_wikitext` is passed.
+- **Two-phase detection** — (1) AI detects policies/guidelines/essays from the structured sections; (2) we ground results by finding each detected policy in the discussion text and only link/highlight where it actually appears (reduces hallucinated mentions).
+- **Changelog versioning** — Changelog now includes version numbers (e.g. V1.7) for releases.
 
 ---
 

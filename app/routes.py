@@ -9,7 +9,7 @@ from scrapers.wikitext_scraper import fetch_wikitext_section
 from analyzers.policy_extractor import extract_wikipedia_links, format_policy_list_with_context
 from analyzers.context_extractor import extract_all_policy_contexts
 from analyzers.openai_analyzer import identify_policies_with_openai
-from app.utils import add_highlight_ids, add_highlighting_to_llm_results
+from app.utils import add_highlight_ids, add_highlighting_to_llm_results, add_sentence_spans_to_html
 
 # Create blueprint
 bp = Blueprint('main', __name__)
@@ -79,7 +79,10 @@ def analyze():
         import os
         if os.environ.get("OPENAI_API_KEY"):
             print(f"\nAnalyzing discussion with OpenAI...")
-            openai_results = identify_policies_with_openai(discussion['text'])
+            openai_results = identify_policies_with_openai(
+                discussion['text'],
+                discussion_wikitext=discussion.get('wikitext')
+            )
             
             # The OpenAI results are already formatted HTML strings
             policies_html = openai_results['policies']
@@ -113,11 +116,21 @@ def analyze():
                 extracted_links['essays']
             )
             
-            # Add IDs to discussion HTML for highlighting/scrolling
+            # Add sentence spans so we can direct to exact sentences, then add highlight IDs
+            discussion_html_with_sentences, sentence_texts = add_sentence_spans_to_html(discussion['html'])
             discussion_html_with_ids = add_highlight_ids(
-                discussion['html'], 
+                discussion_html_with_sentences,
                 with_contexts['policies'] + with_contexts['guidelines'] + with_contexts['essays']
             )
+            
+            # Assign sentence_ids (HTML-aligned) to each item for direct-to-sentence
+            for item in with_contexts['policies'] + with_contexts['guidelines'] + with_contexts['essays']:
+                shortcut = item.get('shortcut') or ''
+                name = (item.get('name') or '').lower()
+                item['sentence_ids'] = [
+                    f"sent-{i}" for i, st in enumerate(sentence_texts)
+                    if shortcut and shortcut in st or (name and name in st.lower())
+                ]
             
             # Format the results for display with context snippets
             policies_html = format_policy_list_with_context(with_contexts['policies'], 'policy')
