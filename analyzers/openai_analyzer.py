@@ -86,7 +86,7 @@ def format_structured_text(sections):
     Format sections with clear markers for LLM to process systematically.
     
     Args:
-        sections: List of text sections
+        sections: List of text sections (strings)
         
     Returns:
         Formatted string with section markers
@@ -106,16 +106,49 @@ def format_structured_text(sections):
     return structured_text
 
 
-def identify_policies_with_openai(discussion_text, model="gpt-4o", temperature=0.1, section_size=8000):
+def sections_from_wikitext_by_headings(wikitext):
+    """
+    Split wikitext by heading lines (== Heading ==) and convert each section body to plain text.
+    Returns list of dicts with "heading" and "text" for use in heading-based structured prompts.
+    """
+    from scrapers.wikitext_scraper import split_wikitext_by_headings, wikitext_to_plain_text
+    raw = split_wikitext_by_headings(wikitext)
+    out = []
+    for part in raw:
+        text = wikitext_to_plain_text(part["body"]).strip() if part["body"] else ""
+        if not text and not part["heading"]:
+            continue
+        out.append({"heading": part["heading"] or "(no heading)", "text": text})
+    return out
+
+
+def format_structured_text_by_headings(section_dicts):
+    """Format section list (each with 'heading' and 'text') for the LLM."""
+    if not section_dicts:
+        return ""
+    if len(section_dicts) == 1 and not section_dicts[0]["heading"]:
+        return section_dicts[0]["text"]
+    parts = []
+    parts.append(f"This discussion is split by headings into {len(section_dicts)} section(s). Identify EVERY unique policy/guideline/essay mention across ALL sections.\n")
+    for i, sec in enumerate(section_dicts, 1):
+        parts.append(f"\n{'='*60}\nSECTION {i}: {sec['heading']}\n{'='*60}\n\n{sec['text']}")
+    return "".join(parts)
+
+
+def identify_policies_with_openai(discussion_text, model="gpt-4o", temperature=0.1, section_size=8000, discussion_wikitext=None):
     """
     Use OpenAI to identify policies, guidelines, and essays in a Wikipedia discussion.
-    Uses structured sections in a single API call per category for optimal performance.
+    Uses heading-based sectioning when wikitext is provided (section = heading + following posts);
+    otherwise falls back to character-based chunking.
+    Two-phase: (1) AI detects policies per section; (2) we ground by finding each detected
+    policy in the discussion text (handled in add_highlighting_to_llm_results).
     
     Args:
-        discussion_text: The extracted discussion text to analyze
-        model: OpenAI model to use (default: gpt-4o-mini)
-        temperature: Temperature for generation (default: 0.3 for more focused output)
-        section_size: Target characters per section (default: 8000)
+        discussion_text: The extracted discussion text to analyze (used when discussion_wikitext is None)
+        model: OpenAI model to use
+        temperature: Temperature for generation
+        section_size: Target characters per section when not using heading-based sectioning
+        discussion_wikitext: Optional raw wikitext; when set, sections are split by == Heading ==
         
     Returns:
         dict with 'policies', 'guidelines', and 'essays' keys containing the analysis
@@ -127,7 +160,6 @@ def identify_policies_with_openai(discussion_text, model="gpt-4o", temperature=0
         print(f"Analyzing discussion with OpenAI (model: {model})...")
         print(f"Discussion text length: {len(discussion_text)} characters")
         
-        # Get the OpenAI client (lazy initialization)
         client = get_openai_client()
         
         if client is None:
@@ -139,12 +171,20 @@ def identify_policies_with_openai(discussion_text, model="gpt-4o", temperature=0
                 'essays': f'<p class="error">{error_msg}</p>'
             }
         
-        # Split text into organized sections (for LLM readability)
-        sections = create_sections(discussion_text, section_size=section_size)
-        print(f"Organized into {len(sections)} section(s) for structured analysis")
-        
-        # Format sections with clear markers
-        structured_text = format_structured_text(sections)
+        # Prefer heading-based sectioning (heading + following posts) when wikitext is available
+        if discussion_wikitext and discussion_wikitext.strip():
+            section_dicts = sections_from_wikitext_by_headings(discussion_wikitext)
+            if section_dicts:
+                structured_text = format_structured_text_by_headings(section_dicts)
+                print(f"Organized into {len(section_dicts)} heading-based section(s) for structured analysis")
+            else:
+                sections = create_sections(discussion_text, section_size=section_size)
+                structured_text = format_structured_text(sections)
+                print(f"Organized into {len(sections)} section(s) for structured analysis")
+        else:
+            sections = create_sections(discussion_text, section_size=section_size)
+            structured_text = format_structured_text(sections)
+            print(f"Organized into {len(sections)} section(s) for structured analysis")
         
         for category in categories:
             print(f"Analyzing {category} (single API call)...")

@@ -178,6 +178,45 @@ def extract_section_from_wikitext(wikitext, section_anchor, sections):
         traceback.print_exc()
         return None
 
+
+def split_wikitext_by_headings(wikitext):
+    """
+    Split wikitext into sections by heading lines (== Heading ==, === Subheading ===, etc.).
+    Each section is the heading plus all following content until the next heading of the same
+    or higher level (fewer = signs).
+
+    Args:
+        wikitext: Raw wikitext content
+
+    Returns:
+        List of dicts: [{"heading": str, "body": str}, ...]
+        "heading" is the heading text without = signs; "body" is the wikitext from the
+        end of that heading line until the next heading (or end of string).
+        Content before the first heading is in a section with heading "".
+    """
+    if not (wikitext or "").strip():
+        return []
+    # Match a full line that is a heading: =+ optional_space title optional_space =+
+    heading_line_re = re.compile(r"^(=+)\s*(.+?)\s*\1\s*$", re.MULTILINE)
+    matches = list(heading_line_re.finditer(wikitext))
+    sections = []
+    for i, m in enumerate(matches):
+        heading_text = m.group(2).strip()
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(wikitext)
+        body = wikitext[start:end].strip()
+        sections.append({"heading": heading_text, "body": body})
+    # Content before first heading
+    if matches:
+        first_start = matches[0].start()
+        pre = wikitext[:first_start].strip()
+        if pre:
+            sections.insert(0, {"heading": "", "body": pre})
+    else:
+        sections.append({"heading": "", "body": wikitext.strip()})
+    return sections
+
+
 """
 convert wikitext to html
 
