@@ -9,7 +9,7 @@ from scrapers.wikitext_scraper import fetch_wikitext_section
 from analyzers.policy_extractor import extract_wikipedia_links, format_policy_list_with_context
 from analyzers.context_extractor import extract_all_policy_contexts
 from analyzers.openai_analyzer import identify_policies_with_openai
-from app.utils import add_highlight_ids, add_highlighting_to_llm_results, add_sentence_spans_to_html
+from app.utils import add_highlight_ids, add_highlighting_to_llm_results, add_sentence_spans_to_html, ground_llm_results_to_text
 
 # Create blueprint
 bp = Blueprint('main', __name__)
@@ -84,13 +84,21 @@ def analyze():
                 discussion_wikitext=discussion.get('wikitext')
             )
             
-            # The OpenAI results are already formatted HTML strings
             policies_html = openai_results['policies']
             guidelines_html = openai_results['guidelines']
             essays_html = openai_results['essays']
             
+            # Pass 2: Ground AI results to discussion text — keep only mentions that appear in text
+            print(f"\nPass 2: Grounding results to discussion text...")
+            policies_html, guidelines_html, essays_html = ground_llm_results_to_text(
+                policies_html,
+                guidelines_html,
+                essays_html,
+                discussion['text']
+            )
+            
             # Add highlighting and scrolling support to LLM results
-            print(f"\nAdding highlighting support to LLM results...")
+            print(f"Adding highlighting support to LLM results...")
             policies_html, guidelines_html, essays_html, discussion_html_with_ids = add_highlighting_to_llm_results(
                 policies_html,
                 guidelines_html,

@@ -14,7 +14,7 @@ _Nothing yet._
 
 - **Heading-based sectioning** — When wikitext is available, the analyzer now splits the discussion by wikitext headings (`== Heading ==`) so each section is "heading + following posts" instead of fixed-size character chunks. This keeps thread context and improves accuracy.
 - **Wikitext parser** — Added `split_wikitext_by_headings()` to split raw wikitext by heading lines; the OpenAI path uses this when `discussion_wikitext` is passed.
-- **Two-phase detection** — (1) AI detects policies/guidelines/essays from the structured sections; (2) we ground results by finding each detected policy in the discussion text and only link/highlight where it actually appears (reduces hallucinated mentions).
+- **Two-pass detection (accuracy)** — **Pass 1:** AI detects policies/guidelines/essays from the structured sections. **Pass 2:** Results are grounded to the discussion text: we only keep and display mentions that actually appear in the text (shortcut or bare suffix, e.g. "NPOV" for WP:NPOV). The right-hand panel and highlighting now show only verified mentions, reducing false positives from the model.
 - **Changelog versioning** — Changelog now includes version numbers (e.g. V1.7) for releases.
 
 ---
