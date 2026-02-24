@@ -10,6 +10,15 @@ _Nothing yet._
 
 ---
 
+## [V4.8] - 2026-02-10
+
+- **Stricter grounding (fewer false positives)** — Short, ambiguous suffixes (e.g. V, N, OR, PA) now require the full shortcut (e.g. WP:V, WP:N) to appear in the text before we keep them; bare-word matching is only used for longer, unambiguous suffixes (e.g. NPOV, NOTCENSORED) to avoid matching common words like "or" or "n".
+- **Allowlist for grounded shortcuts** — Only known policy/guideline/essay shortcuts (from a fixed allowlist) are accepted when grounding; model-invented or mistyped shortcuts are dropped so they never appear in the panel.
+- **Prompt: one line per unique shortcut** — Policies, guidelines, and essays prompts now instruct the model to list each unique shortcut once with one representative quote instead of repeating the same shortcut on multiple lines, reducing double-counting and duplicate output before grounding.
+- **Deduped display** — The right-hand panel already showed each shortcut once (from earlier fix); V4.8 keeps that behavior and adds the above improvements for accuracy.
+
+---
+
 ## [V1.7] - 2026-02-10
 
 - **Heading-based sectioning** — When wikitext is available, the analyzer now splits the discussion by wikitext headings (`== Heading ==`) so each section is "heading + following posts" instead of fixed-size character chunks. This keeps thread context and improves accuracy.

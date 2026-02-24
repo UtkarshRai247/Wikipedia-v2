@@ -163,17 +163,31 @@ def process_llm_output_for_highlighting(llm_html, discussion_html):
     return llm_html, discussion_html, shortcuts_found
 
 
+# Short suffixes that are ambiguous as bare words (V, N, OR, etc.). Require full "WP:X" in text.
+_AMBIGUOUS_BARE_SUFFIXES = frozenset({'V', 'N', 'OR', 'PA', 'CON', 'EL', 'RS', 'AGF', 'COI', 'CITE', 'BLP', 'EW', '3RR'})
+
+# Known policy/guideline/essay shortcuts we accept when grounding (reject model-invented/typos).
+_ALLOWED_SHORTCUTS = frozenset({
+    'WP:NPOV', 'WP:V', 'WP:OR', 'WP:NOR', 'WP:NOT', 'WP:NOTCENSORED', 'WP:INDISCRIMINATE', 'WP:WEIGHT', 'WP:UNDUE', 'WP:DUE', 'WP:BALANCE',
+    'WP:BLP', 'WP:PA', 'WP:NPA', 'WP:CIVIL', 'WP:AGF', 'WP:CON', 'WP:EW', 'WP:3RR', 'WP:CIRCULAR', 'WP:VERIFY',
+    'WP:RS', 'WP:N', 'WP:UGC', 'WP:CITE', 'WP:EL', 'WP:MOS', 'WP:BRD', 'WP:FRINGE', 'WP:COI',
+    'MOS:LABEL', 'MOS:CAPS', 'MOS:BOLD', 'MOS:VAR',
+    'WP:1AM', 'WP:IAR', 'WP:COMMON',
+})
+
 def _shortcut_appears_in_text(shortcut, text):
-    """Return True if shortcut (or its suffix after :) appears in text (case-insensitive)."""
+    """Return True if shortcut actually appears in text. Stricter for short/ambiguous suffixes to reduce false positives."""
     if not (shortcut and text):
         return False
     esc = re.escape(shortcut)
     if re.search(esc, text, re.IGNORECASE):
         return True
-    # Also accept bare suffix e.g. "NPOV" for "WP:NPOV"
+    # Bare suffix: only allow for longer, unambiguous suffixes (e.g. NPOV, NOTCENSORED)
     if ':' in shortcut:
         suffix = shortcut.split(':', 1)[1]
-        if re.search(r'\b' + re.escape(suffix) + r'\b', text, re.IGNORECASE):
+        if suffix.upper() in _AMBIGUOUS_BARE_SUFFIXES:
+            return False
+        if len(suffix) >= 4 and re.search(r'\b' + re.escape(suffix) + r'\b', text, re.IGNORECASE):
             return True
     return False
 
@@ -194,8 +208,11 @@ def ground_llm_results_to_text(policies_html, guidelines_html, essays_html, disc
         for link in soup.find_all('a', href=re.compile(r'wikipedia\.org/wiki/Wikipedia:')):
             link_text = link.get_text()
             m = re.match(r'(WP:[A-Z0-9]+|MOS:[A-Za-z0-9]+)', link_text)
-            if m and _shortcut_appears_in_text(m.group(1), text):
-                grounded.add(m.group(1))
+            if m:
+                sc = m.group(1)
+                norm = (sc.upper() if sc.upper().startswith('WP:') else ('MOS:' + sc.split(':', 1)[1].upper() if ':' in sc else sc))
+                if norm in _ALLOWED_SHORTCUTS and _shortcut_appears_in_text(sc, text):
+                    grounded.add(sc)
 
     collect_grounded(policies_html, "policy")
     collect_grounded(guidelines_html, "guideline")
@@ -203,11 +220,13 @@ def ground_llm_results_to_text(policies_html, guidelines_html, essays_html, disc
 
     def rebuild_html_grounded_only(html):
         soup = BeautifulSoup(html, 'html.parser')
+        seen_shortcuts = set()
         links = []
         for link in soup.find_all('a', href=re.compile(r'wikipedia\.org/wiki/Wikipedia:')):
             link_text = link.get_text()
             m = re.match(r'(WP:[A-Z0-9]+|MOS:[A-Za-z0-9]+)', link_text)
-            if m and m.group(1) in grounded:
+            if m and m.group(1) in grounded and m.group(1) not in seen_shortcuts:
+                seen_shortcuts.add(m.group(1))
                 href = link.get('href', '')
                 links.append(f'<a href="{href}" target="_blank">{html.escape(link_text)}</a>')
         if not links:

@@ -89,12 +89,13 @@ CRITICAL: You MUST find EVERY occurrence, even indirect mentions!
 
 REMEMBER: Missing "original research" or "fails verification" is a CRITICAL ERROR!
 
-OUTPUT FORMAT - List EVERY occurrence separately:
-CRITICAL RULES FOR UNIQUENESS:
+OUTPUT FORMAT - List each UNIQUE policy shortcut ONCE with one representative quote:
+CRITICAL: List each policy (e.g. WP:NPOV, WP:V, WP:OR) at most ONCE. Do not repeat the same shortcut on multiple lines. Our system dedupes and grounds to the text; duplicate shortcut lines cause double-counting and hurt accuracy. Pick ONE best quote per policy.
+UNIQUENESS RULES:
 1. Each line must quote from a DIFFERENT sentence in the discussion
 2. Do NOT list the same sentence twice with different quote lengths (that's the SAME occurrence!)
 3. For "fails verification" phrase: list ONCE only (choose best quote if appears multiple times)
-4. Focus on MEANINGFUL different occurrences, not just word repetition
+4. One link per unique shortcut (e.g. one WP:NPOV line, one WP:OR line)
 5. Do NOT invent quotes that aren't in the discussion
 
 EXAMPLE OF WRONG (duplicate from same sentence):
@@ -194,15 +195,14 @@ CRITICAL: Find EVERY occurrence including explicit, implicit, and phrase forms!
 
 REMEMBER: Be CONSERVATIVE with phrase detection - only count when the guideline is clearly being invoked as a Wikipedia rule, not casual word usage!
 
-OUTPUT FORMAT - List EVERY occurrence separately:
-CRITICAL RULES FOR COUNTING:
-1. Each line must quote from a DIFFERENT sentence in the discussion
+OUTPUT FORMAT - List each UNIQUE guideline shortcut ONCE with one representative quote:
+CRITICAL: List each guideline (e.g. WP:RS, WP:N, MOS:LABEL) at most ONCE. Do not repeat the same shortcut on multiple lines. Our system dedupes and grounds to the text; duplicate lines cause double-counting. Pick ONE best quote per guideline.
+CRITICAL RULES:
+1. Each line must quote from the discussion (one quote per shortcut)
 2. Only count phrases that CLEARLY invoke the guideline as a Wikipedia rule
-3. If explicit shortcut appears in 2 DIFFERENT sentences, LIST BOTH
-4. Do NOT list the same sentence twice with different quote lengths (that's the SAME occurrence!)
-5. For phrase mentions, only count if guideline is being APPLIED/CHALLENGED (not casual use)
-6. Do NOT count every instance of "reliable" or "notable" - only when guideline is invoked
-7. Do NOT invent quotes that aren't in the discussion
+3. Do NOT list the same shortcut twice (one WP:RS line total, one WP:N line total)
+4. Do NOT list the same sentence twice with different quote lengths
+5. Do NOT invent quotes that aren't in the discussion
 
 EXAMPLE OF WRONG (duplicate from same sentence):
 ❌ WP:RS: "You appear to be confusing WP:V and WP:RS"
@@ -254,11 +254,9 @@ SEARCH INSTRUCTIONS:
 3. Case insensitive: wp:1am = WP:1AM
 4. Scan ALL sections
 
-OUTPUT FORMAT - List EVERY occurrence separately:
-<a href="https://en.wikipedia.org/wiki/Wikipedia:1AM" target="_blank">WP:1AM</a>: "Quote from 1st mention"  
-<a href="https://en.wikipedia.org/wiki/Wikipedia:1AM" target="_blank">WP:1AM</a>: "Quote from 2nd mention"  
-
-Do NOT deduplicate - list every single occurrence!
+OUTPUT FORMAT - List each UNIQUE essay shortcut ONCE with one representative quote:
+List each essay (e.g. WP:1AM, WP:IAR) at most ONCE. Do not repeat the same shortcut. Our system dedupes and grounds to the text. One link per essay type.
+Example: <a href="https://en.wikipedia.org/wiki/Wikipedia:1AM" target="_blank">WP:1AM</a>: "Quote from discussion"
 
 If none found: "No essays explicitly mentioned in this discussion."
 """
@@ -299,13 +297,13 @@ SEARCH RULES - AGGRESSIVE INTERPRETATION:
 5. FAMILY AWARE: UNDUE/DUE/WEIGHT/BALANCE → NPOV; VERIFIABLE/CIRCULAR → V; UGC/SPS → RS
 6. AVOID OBVIOUS FALSE POSITIVES: "NOT" alone (not in policy context) ≠ WP:NOT
 
-LISTING ALL OCCURRENCES - CRITICAL REQUIREMENT:
-- Find EVERY occurrence including explicit (WP:OR), implicit (just "DUE"), and phrase form ("original research")
-- List each occurrence on its own line with the specific quote
-- If mentioned 5 times in ANY form, you MUST list it 5 times
+LISTING - CRITICAL REQUIREMENT:
+- Find EVERY policy/guideline/essay that appears (explicit, implicit, or phrase form)
+- List each UNIQUE shortcut ONCE with one representative quote (one line per shortcut, e.g. one WP:NPOV line)
+- Our backend dedupes and grounds to the text; listing the same shortcut multiple times causes double-counting and hurts accuracy
 - Group aliases under parent (UNDUE → "WP:NPOV", "original research" → "WP:OR")
-- Do NOT deduplicate - we want to count EVERY mention
-- Missing mentions is the #1 error to avoid
+- Do NOT repeat the same shortcut on multiple lines
+- Missing a real mention is an error; inventing or duplicating is also an error
 
 CRITICAL SUCCESS METRICS (EQUALLY IMPORTANT):
 - RECALL: 100% - find EVERY real occurrence (explicit + implicit + phrase form)
